@@ -1,8 +1,8 @@
-# MCUI
+# MCGUI
 
 Minecraft Java Edition interfaces for React, built from assets you supply.
 
-MCUI combines native web controls with Minecraft textures, bitmap text, item icons, and familiar inventory layouts. Extract assets from your local game installation once, then serve the generated bundle alongside your application. Extraction stays out of the browser.
+MCGUI combines native web controls with Minecraft textures, bitmap text, item icons, and familiar inventory layouts. Extract assets from your local game installation once, then serve the generated bundle alongside your application. Extraction stays out of the browser.
 
 **Experimental · React 19 · Minecraft Java 26.2 · MIT-licensed code**
 
@@ -18,7 +18,7 @@ The packages are not published to npm yet. You can build and explore them from t
 - **Resource packs:** ordered ZIP or directory packs, compatible overlays, and high-resolution replacements.
 - **Web integration:** native control semantics, keyboard navigation, TypeScript declarations, and server rendering with client-side hydration.
 
-MCUI provides UI and optional inventory state helpers—not a game engine. Your application owns recipes, smelting, trade payments, stock, persistence, and world behavior.
+MCGUI provides UI and optional inventory state helpers—not a game engine. Your application owns recipes, smelting, trade payments, stock, persistence, and world behavior.
 
 ## Packages
 
@@ -184,4 +184,4 @@ Project code is available under the [MIT License](LICENSE).
 
 **No Minecraft textures, fonts, sounds, or game binaries are bundled in the library packages.** The code license does not cover Minecraft assets or third-party resource packs. Local extraction does not grant permission to redistribute those assets: hosting an extracted bundle serves copies to your visitors. Assess your deployment against the [Minecraft Usage Guidelines](https://www.minecraft.net/en-us/usage-guidelines), applicable legal exceptions, and resource-pack licenses. A public demo needs original or independently licensed artwork, fonts, and items.
 
-MCUI is an unofficial project, not approved by or associated with Mojang or Microsoft. Minecraft assets remain their respective owners' property.
+MCGUI is an unofficial project, not approved by or associated with Mojang or Microsoft. Minecraft assets remain their respective owners' property.
