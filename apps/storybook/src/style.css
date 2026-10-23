@@ -1,0 +1,28 @@
+/* Layout only. Storybook supplies navigation, controls, and documentation UI. */
+body { font-family: system-ui, sans-serif; }
+.integration-story { color: #eee; }
+.story-viewport { max-width: 100%; overflow: auto; padding: 8px; }
+.asset-message { color: CanvasText; background: Canvas; padding: 16px; }
+.asset-message pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.integration-story { min-width: 0; max-width: 1200px; margin: auto; font-size: 14px; }
+.integration-story h1 { font-size: 20px; }
+.integration-story h2 { font-size: 16px; margin: 16px 0; }
+.integration-story section { min-width: 0; margin-bottom: 24px; }
+.fixture-controls, .inventory-tools, .item-details-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+.fixture-controls label, .item-details-controls label { display: flex; align-items: center; gap: 8px; }
+.fixture-controls input[type=range] { width: 120px; }
+.preview-grid, .chest-viewport, .creative-viewport, .settings-viewport, .furnace-viewport { max-width: 100%; overflow: auto; padding: 16px 0; }
+.button-sample { padding: 2px; }
+.settings-menu, .furnace-controls { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; width: max-content; }
+.furnace-demo, .slot-examples, .item-details-preview { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+.state-list { display: flex; flex-wrap: wrap; gap: 16px; }
+.state-list article { max-width: 100%; overflow: auto; }
+.state-list article > span { display: block; }
+.slot-output, .preview-footer { display: block; margin: 8px 0; }
+.inventory-note { line-height: 1.5; }
+.item-details-controls input, .item-details-controls textarea { max-width: 100%; }
+.item-details-preview { overflow: auto; }
+.item-details-preview > * { flex-shrink: 0; }
+/* Keep wide, pixel-scaled canvases in their own scroll container on phones. */
+.furnace-demo { min-width: max-content; }
+@media (forced-colors: active) { body { color: CanvasText; } }

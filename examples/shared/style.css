@@ -1,0 +1,4 @@
+body { background: #1c241c; color: #fff; font-family: system-ui, sans-serif; margin: 24px; }
+main, form { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+h1 { font-size: 20px; }
+button { cursor: pointer; }

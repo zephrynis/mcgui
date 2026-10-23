@@ -1,0 +1,12 @@
+node_modules/
+**/dist/
+apps/storybook/public/mcui/
+apps/storybook/public/mcui-*/
+.local/
+**/.mcui-build-*/
+*.tgz
+logs/
+*.log
+.env
+.env.*
+!.env.example
