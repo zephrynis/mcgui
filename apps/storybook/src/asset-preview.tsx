@@ -15,7 +15,7 @@ export function AssetPreview({ bundle, scale, children }: { bundle: string; scal
     });
     return () => controller.abort();
   }, [bundle]);
-  if (error) return <div role="alert" className="asset-message"><p>{error}. Extract assets locally before using the stories.</p><pre>npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcui</pre><p>For the test pack, run <code>npm run prepare:demo-pack</code>. Then reload this story.</p></div>;
+  if (error) return <div role="alert" className="asset-message"><p>{error}. Extract assets locally before using the stories.</p><pre>npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcgui</pre><p>For the test pack, run <code>npm run prepare:demo-pack</code>. Then reload this story.</p></div>;
   if (!loaded || loaded.bundle !== bundle) return <p role="status" className="asset-message">Loading local assets…</p>;
   return <MinecraftProvider assets={loaded.manifest} baseUrl={`/${bundle}`} scale={scale}><div className="story-viewport">{children}</div></MinecraftProvider>;
 }

@@ -1,6 +1,6 @@
 # @mcgui/core
 
-Shared manifest validation, resource identifiers, font measurement, and sprite geometry for MCUI. Initial profile: Minecraft Java 26.2, resource-pack format 88.0.
+Shared manifest validation, resource identifiers, font measurement, and sprite geometry for MCGUI. Initial profile: Minecraft Java 26.2, resource-pack format 88.0.
 
 Exports `parseManifest`, `manifestSchema`, `resourcePath`, `assetUrl`, `measureText`, `spriteSlices`, `normalizeSliderValue`, `progressGeometry`, `chestLayout`, text formatting/wrapping helpers, `JAVA_26_2` resource/layout profiles, and their TypeScript types. New sprite and container roles are optional in the schema so existing manifests still parse; components requiring absent assets request re-extraction. No Minecraft assets are included. See the workspace README for setup and compatibility.
 

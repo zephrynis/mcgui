@@ -6,10 +6,10 @@ import { tmpdir } from 'node:os';
 import { PNG } from 'pngjs';
 import { chromium } from 'playwright';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const executablePath = process.env.MCUI_CHROME ?? execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim();
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const executablePath = process.env.MCGUI_CHROME ?? execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim();
 const browser = await chromium.launch({ executablePath, headless: true });
-const evidence = path.join(tmpdir(), 'mcui-creative');
+const evidence = path.join(tmpdir(), 'mcgui-creative');
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 }), errors = [];
   page.setDefaultTimeout(10000);
@@ -17,7 +17,7 @@ try {
   page.on('console', message => { if (['error', 'warning'].includes(message.type())) errors.push(message.text()); });
   page.on('response', response => { if (response.url().includes('/files/') && response.headers()['content-type'] !== 'image/png') errors.push(`Missing texture: ${response.url()}`); });
   await page.goto(url); assert.equal(page.url(), url); await page.getByRole('heading', { name: 'Inventory workbench', exact: true }).waitFor();
-  const screen = page.locator('.mcui-creative'), cursor = page.locator('.mcui-carried-stack');
+  const screen = page.locator('.mcgui-creative'), cursor = page.locator('.mcgui-carried-stack');
   const tab = name => screen.getByRole('tab', { name, exact: true });
   const catalogue = screen.getByRole('group', { name: 'Creative items', exact: true });
   const cell = name => catalogue.getByRole('button', { name, exact: true });
@@ -42,7 +42,7 @@ try {
   await page.mouse.up();
   await tab('Building Blocks').click();
   await catalogue.hover(); const pageY = await page.evaluate(() => scrollY); await page.mouse.wheel(0, 90);
-  await page.waitForFunction(() => document.querySelector('.mcui-creative [role="scrollbar"]').getAttribute('aria-valuenow') === '1');
+  await page.waitForFunction(() => document.querySelector('.mcgui-creative [role="scrollbar"]').getAttribute('aria-valuenow') === '1');
   assert.equal(await page.evaluate(() => scrollY), pageY);
   assert.notEqual(await catalogue.getByRole('button').first().getAttribute('aria-label'), first);
   await scrollbar.press('End'); assert.equal(await scrollbar.getAttribute('aria-valuenow'), await scrollbar.getAttribute('aria-valuemax'));
@@ -60,10 +60,10 @@ try {
   await cell('Oak Planks').click({ button: 'right' }); await carrying(1);
   await cell('Oak Planks').click({ modifiers: ['Shift'] }); await carrying(64);
   await hot(3).click(); await carrying(0); assert.equal(await hot(3).getAttribute('aria-label'), 'Oak Planks, 64');
-  assert.equal(await page.locator('.mcui-chest [data-mcui-cell="84"]').getAttribute('aria-label'), 'Oak Planks, 64');
+  assert.equal(await page.locator('.mcgui-chest [data-mcgui-cell="84"]').getAttribute('aria-label'), 'Oak Planks, 64');
   assert.equal(await cell('Oak Planks').count(), 1); // catalogue never consumes stock
   await hot(4).press('Space'); await hot(4).click(); await page.mouse.move(0, 0);
-  assert.equal(await hot(4).locator('.mcui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility), 'hidden');
+  assert.equal(await hot(4).locator('.mcgui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility), 'hidden');
 
   await tab('Search Items').click(); assert.equal(await search.evaluate(el => el === document.activeElement), true);
   // One-row scrolling rotates the existing pool and changes only nine items.
@@ -74,7 +74,7 @@ try {
     window.creativeIconsBefore = window.creativeCellsBefore.map(cell => cell.querySelector('img').src);
   });
   await page.mouse.wheel(0, 100);
-  await page.waitForFunction(() => document.querySelector('.mcui-creative [role="scrollbar"]').getAttribute('aria-valuenow') === '1');
+  await page.waitForFunction(() => document.querySelector('.mcgui-creative [role="scrollbar"]').getAttribute('aria-valuenow') === '1');
   assert.equal(await catalogue.evaluate(element => [...element.querySelectorAll('button')].every((cell, index) => cell === window.creativeCellsBefore[(index + 9) % 45])), true);
   assert.equal(await catalogue.evaluate(element => [...element.querySelectorAll('button')].slice(0, 36).every((cell, index) => cell.querySelector('img').src === window.creativeIconsBefore[index + 9])), true);
   const firstScrolledLabel = await catalogue.getByRole('button').first().getAttribute('aria-label');
@@ -109,7 +109,7 @@ try {
   await page.mouse.move(0, 0); await screen.screenshot({ path: `${evidence}-inventory.png` });
   await screen.getByRole('button', { name: 'Destroy item', exact: true }).click({ modifiers: ['Shift'] });
   assert.ok((await hotbar.getByRole('button').evaluateAll(es => es.map(e => e.getAttribute('aria-label')))).every(label => label.startsWith('Empty')));
-  assert.equal(await page.locator('.mcui-furnace [data-mcui-cell="90"]').getAttribute('aria-label'), 'Raw Iron, 8');
+  assert.equal(await page.locator('.mcgui-furnace [data-mcgui-cell="90"]').getAttribute('aria-label'), 'Raw Iron, 8');
 
   await tab('Search Items').click(); await search.fill('diamond');
   await cell('Diamond').press('1'); await carrying(0); assert.equal(await hot(0).getAttribute('aria-label'), 'Diamond, 64');
@@ -130,7 +130,7 @@ try {
   await tab('Combat').press('Home'); assert.equal(await tab('Building Blocks').getAttribute('aria-selected'), 'true');
 
   // Compare real tab pixels (outside the app-supplied icon) against extracted PNGs.
-  for (const bundle of ['mcui', 'mcui-pack']) {
+  for (const bundle of ['mcgui', 'mcgui-pack']) {
     await page.getByLabel('Asset bundle').selectOption(bundle); await screen.waitFor();
     const manifest = JSON.parse(await readFile(`apps/storybook/public/${bundle}/manifest.json`, 'utf8'));
     // Reference: getIconItem() from the locally installed Java 26.2 client.
@@ -185,7 +185,7 @@ try {
       await screen.evaluate((element, style) => element.setAttribute('style', style), originalStyle);
     }
     await page.getByLabel('GUI scale').selectOption('2'); await screen.scrollIntoViewIfNeeded(); await page.mouse.move(0, 0);
-    await screen.screenshot({ path: `${evidence}-${bundle === 'mcui' ? 'desktop' : 'pack'}.png` });
+    await screen.screenshot({ path: `${evidence}-${bundle === 'mcgui' ? 'desktop' : 'pack'}.png` });
   }
   await tab('Saved Hotbars').click(); assert.equal(await screen.getByRole('group', { name: 'Saved hotbar items', exact: true }).getByRole('button').first().getAttribute('aria-label'), 'Diamond');
   await tab('Building Blocks').click(); await page.setViewportSize({ width: 390, height: 844 }); await screen.scrollIntoViewIfNeeded();
@@ -194,7 +194,7 @@ try {
   assert.equal(await page.locator('vite-error-overlay').count(), 0); assert.deepEqual(errors, []);
   const touch = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const touchPage = await touch.newPage(); await touchPage.goto(url);
-  const touchScreen = touchPage.locator('.mcui-creative');
+  const touchScreen = touchPage.locator('.mcgui-creative');
   await touchScreen.getByRole('tab', { name: 'Colored Blocks', exact: true }).tap();
   assert.equal(await touchScreen.getByRole('tab', { name: 'Colored Blocks', exact: true }).getAttribute('aria-selected'), 'true');
   await touchScreen.getByRole('tab', { name: 'Building Blocks', exact: true }).tap();

@@ -40,7 +40,7 @@ test('legacy button-only manifests still parse; chest use asks for re-extraction
   const f = await fixture(); t.after(() => rm(f.root, { recursive: true, force: true }));
   const m = await extractAssets({ clientJar: f.vanilla, out: f.out, characters: '?' });
   const legacy = parseManifest({ ...m, textures: undefined, sprites: { 'button.normal': m.sprites['button.normal'], 'button.highlighted': m.sprites['button.highlighted'], 'button.disabled': m.sprites['button.disabled'] } });
-  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(ChestScreen) })), /Re-run mcui-assets/);
+  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(ChestScreen) })), /Re-run mcgui-assets/);
 });
 
 test('chests server-render correct counts, controlled selection and single slot backgrounds', async t => {
@@ -48,9 +48,9 @@ test('chests server-render correct counts, controlled selection and single slot 
   const assets = await extractAssets({ clientJar: f.vanilla, out: f.out, characters: 'AB?' });
   const child = createElement(ChestScreen, { rows: 6, slots: [{ label: 'A', count: 32, tooltip: 'A' }], selectedSlot: { section: 'chest', index: 0 } });
   const html = renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/test', children: child }));
-  assert.equal((html.match(/data-mcui-slot=""/g) ?? []).length, 90);
+  assert.equal((html.match(/data-mcgui-slot=""/g) ?? []).length, 90);
   assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1);
-  assert.match(html, /aria-label="A, 32"/); assert.doesNotMatch(html, /mcui-slot-background/);
+  assert.match(html, /aria-label="A, 32"/); assert.doesNotMatch(html, /mcgui-slot-background/);
   assert.doesNotMatch(html, /role="tooltip"/); // no document access or portals during SSR
   assert.throws(() => renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/', children: createElement(ChestScreen, { rows: 1, slots: Array(10).fill(null) }) })), /Too many slots/);
   assert.throws(() => renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/', children: createElement(Slot, { label: 'A', count: 0 }) })), /Slot count/);

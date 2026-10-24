@@ -19,7 +19,7 @@ const standalone: (InventoryItem | null)[] = [null,
 const initialItems = [...Array.from({ length: 54 }, (_, index) => chestItems[index] ?? null), ...playerInventory, ...furnaceItems, ...standalone, ...Array<null>(5).fill(null)];
 const playerTargets = Array.from({ length: 36 }, (_, index) => 89 - index);
 
-export function InventoryWorkbench({ scale: globalScale = 2, bundle: globalBundle = 'mcui' }: { scale?: number; bundle?: string }) {
+export function InventoryWorkbench({ scale: globalScale = 2, bundle: globalBundle = 'mcgui' }: { scale?: number; bundle?: string }) {
   const [loadedAssets, setLoadedAssets] = useState<{ manifest: AssetManifest; bundle: string } | null>(null);
   const manifest = loadedAssets?.manifest ?? null;
   const baseUrl = loadedAssets ? `/${loadedAssets.bundle}` : '';
@@ -55,7 +55,7 @@ export function InventoryWorkbench({ scale: globalScale = 2, bundle: globalBundl
     <div className="workbench">
       <section className="preview-panel" aria-label="Component preview">
         <div className="preview-grid">
-          {error ? <div role="alert"><p>{error}</p><code>npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcui</code></div> : !manifest ? <p role="status">Loading local assets…</p> :
+          {error ? <div role="alert"><p>{error}</p><code>npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcgui</code></div> : !manifest ? <p role="status">Loading local assets…</p> :
             <MinecraftProvider assets={manifest} baseUrl={baseUrl} scale={scale}>
               <div className="button-sample"><Button width={width} disabled={disabled} onClick={() => setClicks(value => value + 1)}>{label || 'Button'}</Button></div>
             </MinecraftProvider>}
@@ -67,7 +67,7 @@ export function InventoryWorkbench({ scale: globalScale = 2, bundle: globalBundl
         <label htmlFor="scale">GUI scale <span>{scale}×</span></label><select id="scale" value={scale} onChange={event => setScale(Number(event.target.value))}>{[1,2,3,4].map(value => <option key={value} value={value}>{value}×</option>)}</select>
         <label htmlFor="width">Logical width <span>{width}px</span></label><input id="width" type="range" min="80" max="200" step="1" value={width} onChange={event => setWidth(Number(event.target.value))} />
         <label className="check"><input type="checkbox" checked={disabled} onChange={event => setDisabled(event.target.checked)} /> Disabled state</label>
-        <label htmlFor="bundle">Asset bundle</label><select id="bundle" value={bundle} onChange={event => setBundle(event.target.value)}><option value="mcui">Vanilla · local extraction</option><option value="mcui-pack">Test pack · local extraction</option></select>
+        <label htmlFor="bundle">Asset bundle</label><select id="bundle" value={bundle} onChange={event => setBundle(event.target.value)}><option value="mcgui">Vanilla · local extraction</option><option value="mcgui-pack">Test pack · local extraction</option></select>
       </aside>
     </div>
     {manifest ? <section className="states"><MinecraftProvider assets={manifest} baseUrl={baseUrl} scale={2}>

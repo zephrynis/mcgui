@@ -21,7 +21,7 @@ test('villager extraction supports rectangular sheets, pack overrides and legacy
   assert.equal(assets.sprites['villager.arrow']!.source, 'pack-1');
   assert.deepEqual(await validateBundle(f.out), assets);
   const legacy = parseManifest({ ...assets, textures: undefined });
-  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(VillagerScreen) })), /Re-run mcui-assets/);
+  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(VillagerScreen) })), /Re-run mcgui-assets/);
   await put(p, sheet, png(512, 512));
   await assert.rejects(extractAssets({ clientJar: f.vanilla, packs: [p], out: f.out, characters: '?' }), /512×256/);
 });
@@ -33,12 +33,12 @@ test('villager SSR separates selectable offer previews from inventory slots and 
   const render = (props: VillagerScreenProps = {}) => renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/assets', scale: 2,
     children: createElement(VillagerScreen, { trades, ...props }) }));
   const html = render({ experience: 0.5 });
-  assert.equal((html.match(/data-mcui-slot=""/g) ?? []).length, 39);
+  assert.equal((html.match(/data-mcgui-slot=""/g) ?? []).length, 39);
   assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1);
   assert.match(html, /A, 20 \+ B for B, 6, out of stock/);
   assert.match(html, /aria-label="Villager experience"/);
   assert.match(html, /width:552px;height:332px/);
-  assert.doesNotMatch(html, /mcui-slot-background|NaN|undefined/);
+  assert.doesNotMatch(html, /mcgui-slot-background|NaN|undefined/);
   assert.doesNotMatch(render({ selectedTrade: null }), /aria-pressed="true"/);
   assert.doesNotMatch(render({ trades: [] }), /No trades/);
   assert.match(render({ trades: [] }), /aria-label="Trade offer scroll"[^>]*aria-disabled="true"/);

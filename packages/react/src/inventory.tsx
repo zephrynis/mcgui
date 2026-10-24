@@ -23,24 +23,24 @@ export function Slot({ label, children, count, selected, background = true, rend
   if (count !== undefined && (!Number.isInteger(count) || count < 1 || count > 999)) throw new Error('Slot count must be an integer from 1 to 999, or omitted.');
   // Item changes should not rebuild the two SVG highlight surfaces in every cell.
   const surfaces = useMemo(() => ({
-    background: background ? <Sprite name="slot.background" width={18} height={18} className="mcui-slot-background" /> : null,
-    back: <Sprite name="slot.highlightBack" width={24} height={24} className="mcui-slot-highlight mcui-slot-back" style={{ left: -3 * scale, top: -3 * scale }} />,
-    front: <Sprite name="slot.highlightFront" width={24} height={24} className="mcui-slot-highlight mcui-slot-front" style={{ left: -3 * scale, top: -3 * scale }} />,
+    background: background ? <Sprite name="slot.background" width={18} height={18} className="mcgui-slot-background" /> : null,
+    back: <Sprite name="slot.highlightBack" width={24} height={24} className="mcgui-slot-highlight mcgui-slot-back" style={{ left: -3 * scale, top: -3 * scale }} />,
+    front: <Sprite name="slot.highlightFront" width={24} height={24} className="mcgui-slot-highlight mcgui-slot-front" style={{ left: -3 * scale, top: -3 * scale }} />,
   }), [background, scale]);
   const artwork = useMemo(() => renderVisuals ? <>
     {surfaces.background}{surfaces.back}
-    <span className="mcui-slot-content" aria-hidden="true" style={{ left: scale, top: scale, width: 16 * scale, height: 16 * scale }}>{children}</span>
+    <span className="mcgui-slot-content" aria-hidden="true" style={{ left: scale, top: scale, width: 16 * scale, height: 16 * scale }}>{children}</span>
     {surfaces.front}
-    {count !== undefined && count > 1 ? <span className="mcui-slot-count" aria-hidden="true" style={{ top: 10 * scale, right: -scale }}><MinecraftText>{String(count)}</MinecraftText></span> : null}
+    {count !== undefined && count > 1 ? <span className="mcgui-slot-count" aria-hidden="true" style={{ top: 10 * scale, right: -scale }}><MinecraftText>{String(count)}</MinecraftText></span> : null}
   </> : null, [renderVisuals, surfaces, scale, children, count]);
   const button = <button {...props} type={type} disabled={disabled} aria-label={label} aria-pressed={selected}
-    data-mcui-slot="" data-mcui-index={index ?? undefined} data-selected={selected || undefined}
-    onPointerDownCapture={event => { event.currentTarget.dataset.mcuiPointerFocus = ''; onPointerDownCapture?.(event); }}
-    onKeyDownCapture={event => { delete event.currentTarget.dataset.mcuiPointerFocus; onKeyDownCapture?.(event); }}
-    onBlurCapture={event => { delete event.currentTarget.dataset.mcuiPointerFocus; onBlurCapture?.(event); }}
+    data-mcgui-slot="" data-mcgui-index={index ?? undefined} data-selected={selected || undefined}
+    onPointerDownCapture={event => { event.currentTarget.dataset.mcguiPointerFocus = ''; onPointerDownCapture?.(event); }}
+    onKeyDownCapture={event => { delete event.currentTarget.dataset.mcguiPointerFocus; onKeyDownCapture?.(event); }}
+    onBlurCapture={event => { delete event.currentTarget.dataset.mcguiPointerFocus; onBlurCapture?.(event); }}
     tabIndex={tabIndex ?? (cell ? (cell.active ? 0 : -1) : undefined)}
     onFocus={event => { if (activate && index !== undefined) activate(index); onFocus?.(event); }}
-    className={`mcui-slot ${className}`} style={{ width: 18 * scale, height: 18 * scale, ...style }}>
+    className={`mcgui-slot ${className}`} style={{ width: 18 * scale, height: 18 * scale, ...style }}>
     {renderVisuals ? artwork : null}
   </button>;
   // Keep the DOM structure stable when pickup changes an occupied slot to empty,
@@ -71,16 +71,16 @@ export function InventoryGrid({ columns = 9, label = 'Inventory', children, star
   // without an effect-triggered second render of the entire grid.
   const activeIndex = active >= startIndex && active < startIndex + cells.length ? active : startIndex;
   useEffect(() => {
-    const slots = [...root.current!.querySelectorAll<HTMLButtonElement>('[data-mcui-slot]')].filter(slot => !slot.disabled);
-    if (slots.length && !slots.some(slot => Number(slot.dataset.mcuiIndex) === activeIndex)) setActive(Number(slots[0]!.dataset.mcuiIndex));
+    const slots = [...root.current!.querySelectorAll<HTMLButtonElement>('[data-mcgui-slot]')].filter(slot => !slot.disabled);
+    if (slots.length && !slots.some(slot => Number(slot.dataset.mcguiIndex) === activeIndex)) setActive(Number(slots[0]!.dataset.mcguiIndex));
   }, [children, activeIndex]);
-  return <GridContext.Provider value={setActive}><div {...props} ref={root} role="group" aria-label={label} data-mcui-grid=""
-    className={`mcui-inventory-grid ${className}`} style={{ position: 'relative', display: 'grid', gridTemplateColumns: `repeat(${columns}, ${18 * scale}px)`, width: columns * 18 * scale, ...style }}
+  return <GridContext.Provider value={setActive}><div {...props} ref={root} role="group" aria-label={label} data-mcgui-grid=""
+    className={`mcgui-inventory-grid ${className}`} style={{ position: 'relative', display: 'grid', gridTemplateColumns: `repeat(${columns}, ${18 * scale}px)`, width: columns * 18 * scale, ...style }}
     onKeyDown={event => {
       onKeyDown?.(event); if (event.defaultPrevented) return;
-      const slot = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-mcui-slot]');
-      if (!slot || slot.closest('[data-mcui-grid]') !== event.currentTarget) return;
-      const slots = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('[data-mcui-slot]')];
+      const slot = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-mcgui-slot]');
+      if (!slot || slot.closest('[data-mcgui-grid]') !== event.currentTarget) return;
+      const slots = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('[data-mcgui-slot]')];
       const current = slots.indexOf(slot);
       let next = current, step = 0;
       if (event.key === 'ArrowRight') step = 1;
@@ -116,7 +116,7 @@ export function ChestScreen({ rows = 3, title = rows > 3 ? 'Large Chest' : 'Ches
   selectedSlot, onSlotClick, getSlotProps, className = '', style }: ChestScreenProps) {
   const { assets, scale, baseUrl } = useMinecraft();
   const layout = chestLayout(rows), texture = assets.textures?.['container.chest'];
-  if (!texture) throw new Error('Missing chest assets. Re-run mcui-assets extract with the current CLI.');
+  if (!texture) throw new Error('Missing chest assets. Re-run mcgui-assets extract with the current CLI.');
   if (slots.length > rows * 9 || inventory.length > 36) throw new Error('Too many slots for the selected chest or player inventory.');
   const sx = texture.pixelWidth / texture.logicalWidth, sy = texture.pixelHeight / texture.logicalHeight;
   function crop(sourceY: number, y: number, height: number) {
@@ -134,12 +134,12 @@ export function ChestScreen({ rows = 3, title = rows > 3 ? 'Large Chest' : 'Ches
       onClick={event => { bindings?.onClick?.(event); onSlotClick?.(address, item, event); }}>{item?.content}</Slot>;
   }
   const position = ({ x, y }: { x: number; y: number }): CSSProperties => ({ position: 'absolute', left: x * scale, top: y * scale });
-  return <section aria-label={title} className={`mcui-chest ${className}`} data-rows={rows} style={{ position: 'relative', width: layout.width * scale, height: layout.height * scale, ...style }}>
-    <svg className="mcui-sprite mcui-chest-background" aria-hidden="true" focusable="false" width={layout.width * scale} height={layout.height * scale} viewBox={`0 0 ${layout.width} ${layout.height}`}>
+  return <section aria-label={title} className={`mcgui-chest ${className}`} data-rows={rows} style={{ position: 'relative', width: layout.width * scale, height: layout.height * scale, ...style }}>
+    <svg className="mcgui-sprite mcgui-chest-background" aria-hidden="true" focusable="false" width={layout.width * scale} height={layout.height * scale} viewBox={`0 0 ${layout.width} ${layout.height}`}>
       {crop(0, 0, layout.topHeight)}{crop(126, layout.topHeight, 96)}
     </svg>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(layout.title)}>{title}</MinecraftText>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(layout.inventoryTitle)}>{inventoryTitle}</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(layout.title)}>{title}</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(layout.inventoryTitle)}>{inventoryTitle}</MinecraftText>
     <InventoryGrid label={`${title} slots`} style={position(layout.chest)}>{Array.from({ length: rows * 9 }, (_, index) => cell('chest', index))}</InventoryGrid>
     <InventoryGrid label={`${inventoryTitle} slots`} style={position(layout.inventory)}>{Array.from({ length: 27 }, (_, index) => cell('inventory', index))}</InventoryGrid>
     <InventoryGrid label="Hotbar slots" style={position(layout.hotbar)}>{Array.from({ length: 9 }, (_, index) => cell('inventory', index + 27))}</InventoryGrid>

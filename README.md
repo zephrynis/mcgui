@@ -46,7 +46,7 @@ npm run build
 
 # Find installed versions, then extract GUI assets and item icons.
 npm run assets -- list
-npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcui
+npm run assets -- extract --version 26.2 --items --out apps/storybook/public/mcgui
 
 # Generate the local replacement-pack example and start Storybook.
 npm run prepare:demo-pack
@@ -63,10 +63,10 @@ npm run assets -- extract \
   --client-jar /path/to/minecraft-26.2-client.jar \
   --items \
   --java /path/to/java \
-  --out apps/storybook/public/mcui
+  --out apps/storybook/public/mcgui
 ```
 
-Custom launcher setups can use `--minecraft-dir`, `--version-metadata`, and `--libraries`. The demo-pack script accepts `MCUI_CLIENT_JAR` and `MCUI_JAVA` environment variables. See the [asset tool documentation](packages/assets/README.md) for extraction details.
+Custom launcher setups can use `--minecraft-dir`, `--version-metadata`, and `--libraries`. The demo-pack script accepts `MCGUI_CLIENT_JAR` and `MCGUI_JAVA` environment variables. See the [asset tool documentation](packages/assets/README.md) for extraction details.
 
 ## Use in an application
 
@@ -92,7 +92,7 @@ export function Settings({ assets }: { assets: AssetManifest }) {
   const [volume, setVolume] = useState(50);
 
   return (
-    <MinecraftProvider assets={assets} baseUrl="/mcui" scale={2}>
+    <MinecraftProvider assets={assets} baseUrl="/mcgui" scale={2}>
       <Checkbox checked={subtitles} onCheckedChange={setSubtitles}>
         Show Subtitles
       </Checkbox>
@@ -118,9 +118,9 @@ npm run assets -- extract \
   --version 26.2 \
   --pack /path/to/base-pack.zip \
   --pack /path/to/overrides-folder \
-  --out ./public/mcui
+  --out ./public/mcgui
 
-npm run assets -- validate ./public/mcui
+npm run assets -- validate ./public/mcgui
 ```
 
 GUI-only extraction includes printable ASCII by default. Use `--characters` to select a different character set; it replaces the default set rather than extending it. Bitmap, space, reference, and Unihex/Unifont providers are supported for requested characters. Characters absent from the extracted bundle render as `?`. Re-extract when adding glyphs or components that need new assets.
@@ -147,7 +147,7 @@ npm run check:packages
 npm run check:consumers
 ```
 
-Unit and integration tests generate original synthetic fixtures and do not require Minecraft. Consumer checks install built tarballs in temporary Vite and Next.js projects, build them, and exercise them in Chrome; npm registry access and a working Chrome installation are required. Set `MCUI_CHROME` if Chrome is not detected automatically.
+Unit and integration tests generate original synthetic fixtures and do not require Minecraft. Consumer checks install built tarballs in temporary Vite and Next.js projects, build them, and exercise them in Chrome; npm registry access and a working Chrome installation are required. Set `MCGUI_CHROME` if Chrome is not detected automatically.
 
 With Storybook running and both local asset bundles prepared, run the browser suites:
 

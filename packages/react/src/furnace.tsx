@@ -29,7 +29,7 @@ export function FurnaceScreen({ title = 'Furnace', inventoryTitle = 'Inventory',
   inventory = [], progress = 0, fuelRemaining = 0, selectedSlot, onSlotClick, getSlotProps, className = '', style }: FurnaceScreenProps) {
   const { assets, baseUrl, scale } = useMinecraft();
   const layout = JAVA_26_2.furnace, texture = assets.textures?.['container.furnace'];
-  if (!texture) throw new Error('Missing furnace assets. Re-run mcui-assets extract with the current CLI.');
+  if (!texture) throw new Error('Missing furnace assets. Re-run mcgui-assets extract with the current CLI.');
   if (inventory.length > 36) throw new Error('Too many slots for the player inventory.');
   const position = ({ x, y }: { x: number; y: number }): CSSProperties => ({ position: 'absolute', left: x * scale, top: y * scale });
   function cell(address: FurnaceSlotAddress, item: SlotData | null) {
@@ -40,13 +40,13 @@ export function FurnaceScreen({ title = 'Furnace', inventoryTitle = 'Inventory',
       selected={selectedSlot === undefined ? undefined : selectedSlot?.section === address.section && selectedSlot.index === address.index}
       onClick={event => { bindings?.onClick?.(event); onSlotClick?.(address, item, event); }}>{item?.content}</Slot>;
   }
-  return <section aria-label={title} className={`mcui-furnace ${className}`} style={{ position: 'relative', width: layout.width * scale, height: layout.height * scale, ...style }}>
-    <svg className="mcui-sprite mcui-furnace-background" aria-hidden="true" focusable="false" width={layout.width * scale} height={layout.height * scale}
+  return <section aria-label={title} className={`mcgui-furnace ${className}`} style={{ position: 'relative', width: layout.width * scale, height: layout.height * scale, ...style }}>
+    <svg className="mcgui-sprite mcgui-furnace-background" aria-hidden="true" focusable="false" width={layout.width * scale} height={layout.height * scale}
       viewBox={`0 0 ${layout.width * texture.pixelWidth / texture.logicalWidth} ${layout.height * texture.pixelHeight / texture.logicalHeight}`}>
       <image href={assetUrl(baseUrl, texture.file)} width={texture.pixelWidth} height={texture.pixelHeight} />
     </svg>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position({ x: Math.floor((layout.width - measureText(assets.font, title)) / 2), y: layout.titleY })}>{title}</MinecraftText>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(layout.inventoryTitle)}>{inventoryTitle}</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position({ x: Math.floor((layout.width - measureText(assets.font, title)) / 2), y: layout.titleY })}>{title}</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(layout.inventoryTitle)}>{inventoryTitle}</MinecraftText>
     {(['input', 'fuel', 'output'] as const).map(section => <div key={section} style={position(layout[section])}>{cell({ section, index: 0 }, { input, fuel, output }[section])}</div>)}
     <ProgressBar label="Smelting progress" value={progress} variant="furnace-arrow" style={position(layout.arrow)} />
     <ProgressBar label="Fuel remaining" value={fuelRemaining} variant="furnace-flame" style={position(layout.flame)} />

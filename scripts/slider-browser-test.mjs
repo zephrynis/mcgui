@@ -17,7 +17,7 @@ const modules = {
     import { ArgsContext } from '/slider-args.tsx';
     import meta from '/apps/storybook/src/slider.stories.tsx';
     import '/packages/react/src/styles.css';
-    const assets = await (await fetch('/mcui/manifest.json')).json();
+    const assets = await (await fetch('/mcgui/manifest.json')).json();
     function App() {
       const [args, setArgs] = useState(meta.args);
       const [scale, setScale] = useState(2);
@@ -25,7 +25,7 @@ const modules = {
       window.setSliderScale = setScale;
       window.sliderArgs = args;
       const updateArgs = patch => { window.argUpdates++; window.setSliderArgs(patch); };
-      return <MinecraftProvider assets={assets} baseUrl="/mcui" scale={scale}>
+      return <MinecraftProvider assets={assets} baseUrl="/mcgui" scale={scale}>
         <ArgsContext.Provider value={[args, updateArgs]}><meta.render {...args} /></ArgsContext.Provider>
       </MinecraftProvider>;
     }
@@ -56,7 +56,7 @@ const server = await createServer({
 let browser;
 try {
   await server.listen();
-  browser = await chromium.launch({ headless: true, executablePath: process.env.MCUI_CHROME });
+  browser = await chromium.launch({ headless: true, executablePath: process.env.MCGUI_CHROME });
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -70,7 +70,7 @@ try {
   assert.equal(await slider.inputValue(), '100');
   assert.equal(await slider.getAttribute('aria-valuetext'), 'Music: 100');
   assert.equal(await page.evaluate(() => window.argUpdates), 0, 'No manager updates while dragging');
-  const handle = await page.locator('.mcui-slider-handle').boundingBox();
+  const handle = await page.locator('.mcgui-slider-handle').boundingBox();
   assert.equal(handle.x - box.x, 284, 'Handle tracks the local value before args are committed');
   await page.mouse.up();
   await page.waitForFunction(() => window.sliderArgs.value === 100);
@@ -94,7 +94,7 @@ try {
     await page.evaluate(scale => window.setSliderScale(scale), scale);
     await page.waitForFunction(scale => document.querySelector('input').getBoundingClientRect().width === 150 * scale, scale);
     const inputBox = await slider.boundingBox();
-    const handleBox = await page.locator('.mcui-slider-handle').boundingBox();
+    const handleBox = await page.locator('.mcgui-slider-handle').boundingBox();
     assert.equal(handleBox.width, 8 * scale);
     assert.equal(handleBox.x - inputBox.x, Math.floor(0.7 * 142) * scale);
   }
@@ -103,7 +103,7 @@ try {
   await slider.click({ force: true });
   assert.equal(await slider.inputValue(), '70');
   await page.emulateMedia({ forcedColors: 'active' });
-  assert.equal(await page.locator('.mcui-slider-handle').isVisible(), false);
+  assert.equal(await page.locator('.mcgui-slider-handle').isVisible(), false);
   assert.deepEqual(errors, []);
   console.log('PASS: immediate drag feedback without manager updates, commit, keyboard, external controls, steps, scales, disabled and forced colors.');
 } finally {

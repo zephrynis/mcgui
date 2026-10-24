@@ -1,9 +1,9 @@
 node_modules/
 **/dist/
-apps/storybook/public/mcui/
-apps/storybook/public/mcui-*/
+apps/storybook/public/mcgui/
+apps/storybook/public/mcgui-*/
 .local/
-**/.mcui-build-*/
+**/.mcgui-build-*/
 *.tgz
 logs/
 *.log

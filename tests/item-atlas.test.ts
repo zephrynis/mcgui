@@ -77,14 +77,14 @@ test('ItemIcon renders atlas crops during SSR, fits rectangular icons and suppor
   const images = new ImageStore(), source = images.add(png(16,32,[255,0,0,255]),'item');
   const item = catalogueItem(source.file,16,32,'test:rectangle'); buildItemAtlases([item],images);
   manifest.catalogue = {items:[item],categories:[]};
-  const render = () => renderToString(createElement(MinecraftProvider,{assets:manifest,baseUrl:'/nested/mcui',scale:2,
+  const render = () => renderToString(createElement(MinecraftProvider,{assets:manifest,baseUrl:'/nested/mcgui',scale:2,
     children:createElement(ItemIcon,{stackKey:item.stackKey})}));
   const html = render();
-  assert.match(html,/mcui-item-atlas/); assert.ok(html.includes(`/nested/mcui/${item.icon!.atlas!.file}`));
+  assert.match(html,/mcgui-item-atlas/); assert.ok(html.includes(`/nested/mcgui/${item.icon!.atlas!.file}`));
   assert.match(html,/clip-path:inset\(0% 25%\)/); assert.doesNotMatch(html,/NaN|undefined/);
-  const fractional = renderToString(createElement(MinecraftProvider,{assets:manifest,baseUrl:'/nested/mcui',scale:3,
+  const fractional = renderToString(createElement(MinecraftProvider,{assets:manifest,baseUrl:'/nested/mcgui',scale:3,
     children:createElement(ItemIcon,{stackKey:item.stackKey})}));
-  assert.doesNotMatch(fractional,/mcui-item-atlas/,'fractional resampling retains original pixels');
+  assert.doesNotMatch(fractional,/mcgui-item-atlas/,'fractional resampling retains original pixels');
   delete item.icon!.atlas;
-  assert.doesNotMatch(render(),/mcui-item-atlas/); assert.ok(render().includes(`/nested/mcui/${item.icon!.file}`));
+  assert.doesNotMatch(render(),/mcgui-item-atlas/); assert.ok(render().includes(`/nested/mcgui/${item.icon!.file}`));
 });

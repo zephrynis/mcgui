@@ -61,17 +61,17 @@ test('new assets resolve through ordered packs, retaining logical container size
 test('controls and furnace SSR expose semantic state and reject invalid configurations', async t => {
   const f = await fixture(); t.after(() => rm(f.root, { recursive: true, force: true }));
   const assets = await extractAssets({ clientJar: f.vanilla, out: f.out, characters: 'AB?' });
-  const render = (children: React.ReactNode) => renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/subpath/mcui', children }));
+  const render = (children: React.ReactNode) => renderToString(createElement(MinecraftProvider, { assets, baseUrl: '/subpath/mcgui', children }));
   const checkbox = render(createElement(Checkbox, { children: 'A', checked: true, disabled: true, name: 'option' }));
   assert.match(checkbox, /type="checkbox"/); assert.match(checkbox, /checked=""/); assert.match(checkbox, /disabled=""/); assert.match(checkbox, /name="option"/);
   const slider = render(createElement(Slider, { label: 'A', value: 0.5, min: 0, max: 1, step: 0.1 }));
   assert.match(slider, /type="range"/); assert.match(slider, /value="0.5"/); assert.match(slider, /aria-label="A"/);
-  assert.match(slider, /class="mcui-slider-handle" style="left:0;transform:translateX\(142px\)"/);
+  assert.match(slider, /class="mcgui-slider-handle" style="left:0;transform:translateX\(142px\)"/);
   const furnace = render(createElement(FurnaceScreen, { input: { label: 'A', count: 8 }, output: { label: 'B' }, selectedSlot: { section: 'output', index: 0 }, progress: 0.5, fuelRemaining: 0.75 }));
-  assert.equal((furnace.match(/data-mcui-slot=""/g) ?? []).length, 39);
+  assert.equal((furnace.match(/data-mcgui-slot=""/g) ?? []).length, 39);
   assert.equal((furnace.match(/aria-pressed="true"/g) ?? []).length, 1);
   assert.equal((furnace.match(/role="progressbar"/g) ?? []).length, 2);
-  assert.match(furnace, /aria-label="A, 8"/); assert.doesNotMatch(furnace, /mcui-slot-background|NaN|undefined/);
+  assert.match(furnace, /aria-label="A, 8"/); assert.doesNotMatch(furnace, /mcgui-slot-background|NaN|undefined/);
   for (const props of [{ value: NaN }, { value: 101 }, { value: 0, max: 0 }, { value: 50, step: 0 }, { value: 50, width: 8 }]) {
     assert.throws(() => render(createElement(Slider, { label: 'A', ...props })), /Slider/);
   }
@@ -79,6 +79,6 @@ test('controls and furnace SSR expose semantic state and reject invalid configur
   assert.throws(() => render(createElement(ProgressBar, { label: 'A', value: 2 })), /Progress value/);
   const legacy = parseManifest({ ...assets, textures: undefined, sprites: { 'button.normal': assets.sprites['button.normal'], 'button.highlighted': assets.sprites['button.highlighted'], 'button.disabled': assets.sprites['button.disabled'] } });
   for (const child of [createElement(Checkbox, { checked: false, children: 'A' }), createElement(Slider, { label: 'A', value: 50 }), createElement(FurnaceScreen)]) {
-    assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: child })), /Re-run mcui-assets/);
+    assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: child })), /Re-run mcgui-assets/);
   }
 });

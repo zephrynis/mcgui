@@ -25,7 +25,7 @@ test('rich text measures bold advances and preserves formatting through wrapping
   assert.equal(measureText(assets.font,text),measureText(assets.font,'AB AB')+5);
   const wrapped=wrapText(assets.font,text,measureText(assets.font,[{text:'AB',bold:true}]));
   assert.equal(wrapped.length,2);assert.ok(wrapped.every(line=>line.every(run=>run.bold && run.italic && run.underlined && run.strikethrough)));
-  const html=renderToString(createElement(MinecraftProvider,{assets,baseUrl:'/mcui',children:createElement(MinecraftText,{children:text})}));
+  const html=renderToString(createElement(MinecraftProvider,{assets,baseUrl:'/mcgui',children:createElement(MinecraftText,{children:text})}));
   assert.match(html,/matrix\(1 0 -0.25 1 1 0\)/);assert.match(html,/translate\(1 0\)/);assert.match(html,/<rect/);assert.match(html,/AB AB/);
   const item={tooltip:['Sword','Old enchantment'],styledTooltip:[[{text:'Sword',color:'#55ffff' as const}],[{text:'Old enchantment',color:'#aaaaaa' as const}]]};
   assert.equal(plainText(itemTooltip(item)),'Sword\nOld enchantment');
@@ -44,9 +44,9 @@ test('extraction retains native styles and item state, follows glint pack overri
   await put(f.root,'catalogue.json',{version:'26.2',tabs:[{id:'minecraft:tools_and_utilities',label:'Tools',kind:'CATEGORY',items:[data]}]});
   const assets=await extractAssets({clientJar:f.vanilla,out:f.out,items:true,catalogueFile:`${f.root}/catalogue.json`,characters:'?'});
   const item=assets.catalogue!.items[0];assert.deepEqual(item.styledTooltip,data.styledTooltip);assert.equal(item.maxDamage,100);assert.equal(item.glint,true);
-  const render=(props={})=>renderToString(createElement(MinecraftProvider,{assets,baseUrl:'/nested/mcui',scale:2,children:createElement(ItemIcon,{stackKey:item.stackKey,...props})}));
-  const html=render();assert.match(html,/mcui-item-glint/);assert.match(html,/mcui-durability/);assert.match(html,/data-width="7"/);assert.match(html,/left:4px;top:26px;width:26px;height:4px/);
-  assert.ok(html.includes(assets.textures!['item.glint']!.file));assert.doesNotMatch(render({damage:0,glint:false}),/mcui-durability|mcui-item-glint/);
+  const render=(props={})=>renderToString(createElement(MinecraftProvider,{assets,baseUrl:'/nested/mcgui',scale:2,children:createElement(ItemIcon,{stackKey:item.stackKey,...props})}));
+  const html=render();assert.match(html,/mcgui-item-glint/);assert.match(html,/mcgui-durability/);assert.match(html,/data-width="7"/);assert.match(html,/left:4px;top:26px;width:26px;height:4px/);
+  assert.ok(html.includes(assets.textures!['item.glint']!.file));assert.doesNotMatch(render({damage:0,glint:false}),/mcgui-durability|mcgui-item-glint/);
   const pack=`${f.root}/pack`;await put(pack,'pack.mcmeta',{pack:{min_format:88,max_format:88}});
   await put(pack,'assets/minecraft/textures/misc/enchanted_glint_item.png',png(256,256,[20,200,100,255]));
   const overlay=await extractAssets({clientJar:f.vanilla,out:f.out,packs:[pack],items:true,catalogueFile:`${f.root}/catalogue.json`,characters:'?'});

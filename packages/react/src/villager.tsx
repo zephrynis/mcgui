@@ -66,7 +66,7 @@ export function VillagerScreen({ title = 'Villager', inventoryTitle = 'Inventory
     scrollToRow(Math.round(Math.max(0, Math.min(1, ((y - element.getBoundingClientRect().top) / scale - 13.5) / 113)) * maxRow));
   }
   const texture = assets.textures?.['container.villager'];
-  if (!texture) throw new Error('Missing villager assets. Re-run mcui-assets extract with the current CLI.');
+  if (!texture) throw new Error('Missing villager assets. Re-run mcgui-assets extract with the current CLI.');
   if (inventory.length > 36) throw new Error('Too many slots for the player inventory.');
   if (!Number.isInteger(defaultSelectedTrade) || defaultSelectedTrade < 0) throw new Error('Default selected trade must be a nonnegative integer.');
   if (selectedTrade !== undefined && selectedTrade !== null && (!Number.isInteger(selectedTrade) || selectedTrade < 0 || selectedTrade >= trades.length)) {
@@ -84,24 +84,24 @@ export function VillagerScreen({ title = 'Villager', inventoryTitle = 'Inventory
   }
   function preview(item: SlotData, x: number) {
     if (item.count !== undefined && (!Number.isInteger(item.count) || item.count < 1 || item.count > 999)) throw new Error('Trade count must be an integer from 1 to 999, or omitted.');
-    return <span className="mcui-trade-item" style={{ ...position(x, 2), width: 16 * scale, height: 16 * scale }} aria-hidden="true">
+    return <span className="mcgui-trade-item" style={{ ...position(x, 2), width: 16 * scale, height: 16 * scale }} aria-hidden="true">
       {item.content}
       {item.count !== undefined && item.count > 1 ? <MinecraftText style={{ ...position(0, 9), right: -scale, left: 'auto' }}>{String(item.count)}</MinecraftText> : null}
     </span>;
   }
-  return <section aria-label={title} className={`mcui-villager ${className}`} style={{ position: 'relative', width: 276 * scale, height: 166 * scale, ...style }}>
-    <svg className="mcui-sprite mcui-villager-background" aria-hidden="true" focusable="false" width={276 * scale} height={166 * scale}
+  return <section aria-label={title} className={`mcgui-villager ${className}`} style={{ position: 'relative', width: 276 * scale, height: 166 * scale, ...style }}>
+    <svg className="mcgui-sprite mcgui-villager-background" aria-hidden="true" focusable="false" width={276 * scale} height={166 * scale}
       viewBox={`0 0 ${276 * texture.pixelWidth / texture.logicalWidth} ${166 * texture.pixelHeight / texture.logicalHeight}`}>
       <image href={assetUrl(baseUrl, texture.file)} width={texture.pixelWidth} height={texture.pixelHeight} />
     </svg>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(Math.max(107, Math.floor(107 + (162 - measureText(assets.font, title)) / 2)), 6)}>{title}</MinecraftText>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(28, 6)}>Trades</MinecraftText>
-    <MinecraftText shadow={false} className="mcui-chest-title" style={position(107, 72)}>{inventoryTitle}</MinecraftText>
-    <div ref={list} id={listId} role="group" aria-label="Trade offers" className="mcui-trade-list"
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(Math.max(107, Math.floor(107 + (162 - measureText(assets.font, title)) / 2)), 6)}>{title}</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(28, 6)}>Trades</MinecraftText>
+    <MinecraftText shadow={false} className="mcgui-chest-title" style={position(107, 72)}>{inventoryTitle}</MinecraftText>
+    <div ref={list} id={listId} role="group" aria-label="Trade offers" className="mcgui-trade-list"
       onScroll={event => setScrollRow(Math.round(event.currentTarget.scrollTop / (20 * scale)))}
       style={{ ...position(5, 18), width: 88 * scale, height: 140 * scale }}>
       {trades.map((trade, index) => <button type="button" key={index}
-        className="mcui-trade-offer" aria-pressed={active === index}
+        className="mcgui-trade-offer" aria-pressed={active === index}
         aria-label={`${itemLabel(trade.input)}${trade.secondaryInput ? ` + ${itemLabel(trade.secondaryInput)}` : ''} for ${itemLabel(trade.output)}${trade.outOfStock ? ', out of stock' : ''}`}
         style={{ width: 88 * scale, height: 20 * scale }}
         onClick={() => { setSelection(index); onTradeSelect?.(index, trade); }}
@@ -116,7 +116,7 @@ export function VillagerScreen({ title = 'Villager', inventoryTitle = 'Inventory
           const button = event.currentTarget.parentElement!.children[next] as HTMLButtonElement;
           button.focus(); button.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         }}>
-        <Sprite name={active === index ? 'button.highlighted' : 'button.normal'} width={88} height={20} className="mcui-trade-surface" />
+        <Sprite name={active === index ? 'button.highlighted' : 'button.normal'} width={88} height={20} className="mcgui-trade-surface" />
         {preview(trade.input, 4)}{trade.secondaryInput ? preview(trade.secondaryInput, 29) : null}
         <Sprite name={trade.outOfStock ? 'villager.arrowOutOfStock' : 'villager.arrow'} width={10} height={9} style={position(57, 5)} />
         {preview(trade.output, 68)}
@@ -124,7 +124,7 @@ export function VillagerScreen({ title = 'Villager', inventoryTitle = 'Inventory
     </div>
     <div role="scrollbar" aria-label="Trade offer scroll" aria-controls={listId} aria-orientation="vertical"
       aria-valuemin={0} aria-valuemax={maxRow} aria-valuenow={row} aria-disabled={!maxRow}
-      tabIndex={maxRow ? 0 : -1} className="mcui-trade-scroll"
+      tabIndex={maxRow ? 0 : -1} className="mcgui-trade-scroll"
       style={{ ...position(94, 18), width: 6 * scale, height: 140 * scale }}
       onPointerDown={event => {
         if (!maxRow || event.button !== 0) return;

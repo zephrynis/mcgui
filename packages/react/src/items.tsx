@@ -36,7 +36,7 @@ function GlintMotion({scale}: {scale:number}) {
     update(); reduced.addEventListener('change',update);
     return ()=>{reduced.removeEventListener('change',update);animation.cancel();};
   },[scale]);
-  return <span ref={ref} className="mcui-glint-angle"><span className="mcui-glint-y" /></span>;
+  return <span ref={ref} className="mcgui-glint-angle"><span className="mcgui-glint-y" /></span>;
 }
 /** Resolves against the current provider, including after a resource-pack switch. */
 export function ItemIcon({ stackKey, fallback, damage, maxDamage, glint }: ItemIconProps) {
@@ -50,7 +50,7 @@ export function ItemIcon({ stackKey, fallback, damage, maxDamage, glint }: ItemI
   let artwork: ReactNode;
   if (icon.atlas && iconSource(icon, scale) === icon.atlas) {
     const atlas = icon.atlas, extent = Math.max(icon.pixelWidth, icon.pixelHeight);
-    artwork = <span aria-hidden="true" className="mcui-item-atlas" style={{display:'block',position:'relative',overflow:'hidden',width:16*scale,height:16*scale,maxWidth:'100%',maxHeight:'100%',
+    artwork = <span aria-hidden="true" className="mcgui-item-atlas" style={{display:'block',position:'relative',overflow:'hidden',width:16*scale,height:16*scale,maxWidth:'100%',maxHeight:'100%',
       clipPath: icon.pixelWidth === icon.pixelHeight ? undefined : `inset(${(extent-icon.pixelHeight)/extent*50}% ${(extent-icon.pixelWidth)/extent*50}%)`}}>
       <img alt="" draggable={false} src={assetUrl(baseUrl,atlas.file)} width={atlas.pixelWidth} height={atlas.pixelHeight}
         style={{position:'absolute',maxWidth:'none',imageRendering:'pixelated',width:`${atlas.pixelWidth/extent*100}%`,height:`${atlas.pixelHeight/extent*100}%`,
@@ -60,15 +60,15 @@ export function ItemIcon({ stackKey, fallback, damage, maxDamage, glint }: ItemI
   if (!bar && !foil) return artwork;
   const source = iconSource(icon,scale), extent = Math.max(icon.pixelWidth,icon.pixelHeight), ratio = 16*scale/extent;
   const sx = 'x' in source ? source.x : 0, sy = 'y' in source ? source.y : 0;
-  return <span className="mcui-item-state" aria-hidden="true" style={{position:'relative',display:'block',width:16*scale,height:16*scale,isolation:'isolate'}}>
+  return <span className="mcgui-item-state" aria-hidden="true" style={{position:'relative',display:'block',width:16*scale,height:16*scale,isolation:'isolate'}}>
     {artwork}
-    {foil ? <span className="mcui-item-glint" style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden',mixBlendMode:'plus-lighter',imageRendering:'pixelated',
+    {foil ? <span className="mcgui-item-glint" style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden',mixBlendMode:'plus-lighter',imageRendering:'pixelated',
       maskImage:`url("${assetUrl(baseUrl,source.file)}")`,maskMode:'alpha',maskRepeat:'no-repeat',
       maskSize:`${source.pixelWidth*ratio}px ${source.pixelHeight*ratio}px`,maskPosition:`${((extent-icon.pixelWidth)/2-sx)*ratio}px ${((extent-icon.pixelHeight)/2-sy)*ratio}px`,
       clipPath:`inset(${(extent-icon.pixelHeight)/extent*50}% ${(extent-icon.pixelWidth)/extent*50}%)`,
-      '--mcui-glint-texture':`url("${assetUrl(baseUrl,assets.textures!['item.glint']!.file)}")`, '--mcui-glint-tile':`${32*scale}px`,
+      '--mcgui-glint-texture':`url("${assetUrl(baseUrl,assets.textures!['item.glint']!.file)}")`, '--mcgui-glint-tile':`${32*scale}px`,
     } as CSSProperties}><GlintMotion scale={scale}/></span> : null}
-    {bar ? <span className="mcui-durability" data-width={bar.width} style={{position:'absolute',left:2*scale,top:13*scale,width:13*scale,height:2*scale,background:'#000'}}>
+    {bar ? <span className="mcgui-durability" data-width={bar.width} style={{position:'absolute',left:2*scale,top:13*scale,width:13*scale,height:2*scale,background:'#000'}}>
       <span style={{display:'block',width:bar.width*scale,height:scale,background:bar.color}} />
     </span> : null}
   </span>;

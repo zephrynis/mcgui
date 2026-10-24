@@ -6,10 +6,10 @@ import { tmpdir } from 'node:os';
 import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const executablePath = process.env.MCUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const executablePath = process.env.MCGUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
 const browser = await chromium.launch({ executablePath, headless: true });
-const evidence = path.join(tmpdir(), 'mcui'), errors = [];
+const evidence = path.join(tmpdir(), 'mcgui'), errors = [];
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
   page.setDefaultTimeout(10000);
@@ -45,16 +45,16 @@ try {
   await checkbox.hover(); await page.getByRole('tooltip').waitFor();
   assert.ok(await checkbox.getAttribute('aria-describedby')); await page.keyboard.press('Escape');
   await music.focus();
-  assert.equal(await settings.locator('.mcui-slider').first().locator(':scope > .mcui-control-highlighted').evaluate(el => getComputedStyle(el).visibility), 'visible');
+  assert.equal(await settings.locator('.mcgui-slider').first().locator(':scope > .mcgui-control-highlighted').evaluate(el => getComputedStyle(el).visibility), 'visible');
   await page.mouse.move(0, 0);
   await settings.screenshot({ path: `${evidence}-settings-desktop.png` });
 
   await furnace.scrollIntoViewIfNeeded();
-  const screen = furnace.locator('.mcui-furnace');
-  assert.equal(await screen.locator('[data-mcui-slot]').count(), 39);
-  assert.equal(await screen.locator('.mcui-slot-background').count(), 0);
+  const screen = furnace.locator('.mcgui-furnace');
+  assert.equal(await screen.locator('[data-mcgui-slot]').count(), 39);
+  assert.equal(await screen.locator('.mcgui-slot-background').count(), 0);
   const result = screen.getByRole('button', { name: 'Iron Ingot, 4', exact: true });
-  await result.click(); assert.equal(await screen.locator('[data-mcui-cell="92"]').getAttribute('aria-pressed'), null);
+  await result.click(); assert.equal(await screen.locator('[data-mcgui-cell="92"]').getAttribute('aria-pressed'), null);
   assert.match(await page.locator('.furnace-output').innerText(), /Carrying Iron Ingot, 4/);
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Reset items', exact: true }).click();
@@ -66,27 +66,27 @@ try {
   for (const scale of [1, 2, 3, 4]) {
     await page.getByLabel('GUI scale').selectOption(String(scale));
     assert.equal((await screen.boundingBox()).width, 176 * scale); assert.equal((await screen.boundingBox()).height, 166 * scale);
-    assert.equal((await settings.locator('.mcui-checkbox-box').first().boundingBox()).width, 17 * scale);
+    assert.equal((await settings.locator('.mcgui-checkbox-box').first().boundingBox()).width, 17 * scale);
     assert.equal((await music.boundingBox()).width, 150 * scale);
-    assert.equal((await settings.locator('.mcui-slider-handle').first().boundingBox()).width, 8 * scale);
+    assert.equal((await settings.locator('.mcgui-slider-handle').first().boundingBox()).width, 8 * scale);
     await smelting.press('Home'); await fuel.press('Home');
-    assert.equal((await arrow.locator('.mcui-progress-fill').boundingBox()).width, 0);
-    assert.equal((await flame.locator('.mcui-progress-fill').boundingBox()).height, 0);
+    assert.equal((await arrow.locator('.mcgui-progress-fill').boundingBox()).width, 0);
+    assert.equal((await flame.locator('.mcgui-progress-fill').boundingBox()).height, 0);
     await smelting.press('End'); await fuel.press('End');
-    assert.equal((await arrow.locator('.mcui-progress-fill').boundingBox()).width, 24 * scale);
-    assert.equal((await flame.locator('.mcui-progress-fill').boundingBox()).height, 14 * scale);
+    assert.equal((await arrow.locator('.mcgui-progress-fill').boundingBox()).width, 24 * scale);
+    assert.equal((await flame.locator('.mcgui-progress-fill').boundingBox()).height, 14 * scale);
   }
   await page.getByLabel('GUI scale').selectOption('1');
   // Align the furnace to whole device pixels for source-image comparisons.
   await screen.evaluate(el => el.style.cssText = 'position:fixed;left:0;top:0;z-index:100;width:176px;height:166px');
-  const manifest = JSON.parse(await readFile('apps/storybook/public/mcui/manifest.json', 'utf8'));
+  const manifest = JSON.parse(await readFile('apps/storybook/public/mcgui/manifest.json', 'utf8'));
   for (const [slider, indicator, role, width, height, vertical] of [[smelting, arrow, 'furnace.arrow', 24, 16, false], [fuel, flame, 'furnace.flame', 14, 14, true]]) {
     await slider.fill('50'); await page.mouse.move(1000, 0);
-    const captured = PNG.sync.read(await indicator.screenshot()), source = PNG.sync.read(await readFile(path.join('apps/storybook/public/mcui', manifest.sprites[role].file)));
+    const captured = PNG.sync.read(await indicator.screenshot()), source = PNG.sync.read(await readFile(path.join('apps/storybook/public/mcgui', manifest.sprites[role].file)));
     assert.equal(captured.width, width); assert.equal(captured.height, height);
     const filled = vertical ? 8 : 12;
     assert.equal(await indicator.getAttribute('aria-valuenow'), '0.5');
-    assert.equal((await indicator.locator('.mcui-progress-fill').boundingBox())[vertical ? 'height' : 'width'], filled);
+    assert.equal((await indicator.locator('.mcgui-progress-fill').boundingBox())[vertical ? 'height' : 'width'], filled);
     let compared = 0;
     for (let y = vertical ? height - filled : 0; y < height; y++) for (let x = 0; x < (vertical ? width : filled); x++) {
       const index = (y * width + x) * 4;
@@ -97,14 +97,14 @@ try {
   await screen.evaluate(el => { el.style.position = 'relative'; el.style.left = ''; el.style.top = ''; el.style.zIndex = ''; });
   await page.getByLabel('GUI scale').selectOption('2'); await furnace.scrollIntoViewIfNeeded();
   await furnace.screenshot({ path: `${evidence}-furnace-desktop.png` });
-  await page.getByLabel('Asset bundle').selectOption('mcui-pack'); await settings.waitFor();
-  const pack = await (await page.request.get(new URL('/mcui-pack/manifest.json', url).href)).json();
+  await page.getByLabel('Asset bundle').selectOption('mcgui-pack'); await settings.waitFor();
+  const pack = await (await page.request.get(new URL('/mcgui-pack/manifest.json', url).href)).json();
   assert.equal(pack.textures['container.furnace'].pixelWidth, 512);
-  assert.equal(await screen.locator('.mcui-furnace-background image').getAttribute('href'), `/mcui-pack/${pack.textures['container.furnace'].file}`);
-  assert.equal(await settings.locator('.mcui-checkbox-box .mcui-control-normal image').first().getAttribute('href'), `/mcui-pack/${pack.sprites['checkbox.normal'].file}`);
-  assert.equal(await settings.locator('.mcui-slider-handle .mcui-control-normal image').first().getAttribute('href'), `/mcui-pack/${pack.sprites['slider.handle'].file}`);
+  assert.equal(await screen.locator('.mcgui-furnace-background image').getAttribute('href'), `/mcgui-pack/${pack.textures['container.furnace'].file}`);
+  assert.equal(await settings.locator('.mcgui-checkbox-box .mcgui-control-normal image').first().getAttribute('href'), `/mcgui-pack/${pack.sprites['checkbox.normal'].file}`);
+  assert.equal(await settings.locator('.mcgui-slider-handle .mcgui-control-normal image').first().getAttribute('href'), `/mcgui-pack/${pack.sprites['slider.handle'].file}`);
   await settings.screenshot({ path: `${evidence}-settings-pack.png` }); await furnace.screenshot({ path: `${evidence}-furnace-pack.png` });
-  await page.getByLabel('Asset bundle').selectOption('mcui'); await settings.waitFor();
+  await page.getByLabel('Asset bundle').selectOption('mcgui'); await settings.waitFor();
   await page.setViewportSize({ width: 390, height: 844 });
   await settings.screenshot({ path: `${evidence}-settings-mobile.png` }); await furnace.screenshot({ path: `${evidence}-furnace-mobile.png` });
   for (const scale of [1, 2, 3, 4]) {
@@ -116,8 +116,8 @@ try {
   await music.focus(); await music.press('ArrowRight'); assert.equal(await music.inputValue(), '51');
   assert.equal(await music.evaluate(el => getComputedStyle(el).opacity), '1');
   assert.equal(await music.evaluate(el => getComputedStyle(el).appearance), 'auto');
-  assert.equal(await settings.locator('.mcui-native-label').first().isVisible(), true);
-  assert.equal(await settings.locator('.mcui-slider-handle').first().isVisible(), false);
+  assert.equal(await settings.locator('.mcgui-native-label').first().isVisible(), true);
+  assert.equal(await settings.locator('.mcgui-slider-handle').first().isVisible(), false);
   await page.mouse.move(0, 0); await page.keyboard.press('Escape');
   await settings.screenshot({ path: `${evidence}-settings-forced-colors.png` });
   assert.equal(await page.locator('vite-error-overlay').count(), 0); assert.deepEqual(errors, []);

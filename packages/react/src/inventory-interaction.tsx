@@ -8,8 +8,8 @@ import type { SlotData, SlotProps } from './inventory.js';
 
 export interface InventoryItem extends SlotData, ItemStack { count: number }
 export type InventorySlotBindings = Pick<SlotProps, 'onPointerDown' | 'onPointerEnter' | 'onPointerLeave' | 'onClick' | 'onDoubleClick' | 'onContextMenu' | 'onKeyDown' | 'onFocus' | 'tooltipDisabled' | 'aria-keyshortcuts'> & {
-  'data-mcui-inventory': string;
-  'data-mcui-cell': number;
+  'data-mcgui-inventory': string;
+  'data-mcgui-cell': number;
 };
 export interface UseInventoryOptions<T extends InventoryItem> extends InventoryRules<T> {
   /** Read once. Keep all slots in a stable, flat array, including hidden rows. */
@@ -64,8 +64,8 @@ export function useInventory<T extends InventoryItem>(options: UseInventoryOptio
   }
   useEffect(() => {
     function targetAt(event: PointerEvent) {
-      const element = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLButtonElement>('[data-mcui-cell]');
-      return element?.dataset.mcuiInventory === id && !element.disabled ? Number(element.dataset.mcuiCell) : null;
+      const element = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLButtonElement>('[data-mcgui-cell]');
+      return element?.dataset.mcguiInventory === id && !element.disabled ? Number(element.dataset.mcguiCell) : null;
     }
     function cancel() { gesture.current = null; setPreview(null); }
     function move(event: PointerEvent) {
@@ -113,7 +113,7 @@ export function useInventory<T extends InventoryItem>(options: UseInventoryOptio
   const rendered = preview && preview.targets.length > 1 ? distributeInventory(state, preview.targets, preview.button, rules(state, options)) : state;
   function getSlotProps(index: number, overrides?: { quickMoveTargets?: readonly number[] | 'discard'; collectTargets?: readonly number[] }): InventorySlotBindings {
     return {
-      'data-mcui-inventory': id, 'data-mcui-cell': index,
+      'data-mcgui-inventory': id, 'data-mcgui-cell': index,
       'aria-keyshortcuts': 'Enter Space Shift+Enter Shift+Space Shift+F10 1 2 3 4 5 6 7 8 9 F',
       tooltipDisabled: state.carried !== null,
       onPointerEnter: () => { hovered.current=index; },
@@ -166,10 +166,10 @@ export function useInventory<T extends InventoryItem>(options: UseInventoryOptio
         }
       },
       onFocus: event => {
-        if (event.currentTarget.hasAttribute('data-mcui-pointer-focus')) return;
+        if (event.currentTarget.hasAttribute('data-mcgui-pointer-focus')) return;
         const rect = event.currentTarget.getBoundingClientRect();
         anchor.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-        document.dispatchEvent(new Event('mcui-inventory-anchor'));
+        document.dispatchEvent(new Event('mcgui-inventory-anchor'));
       },
     };
   }
@@ -181,7 +181,7 @@ export function useInventory<T extends InventoryItem>(options: UseInventoryOptio
     function anchorAt(element: HTMLElement) {
       const rect = element.getBoundingClientRect();
       anchor.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-      document.dispatchEvent(new Event('mcui-inventory-anchor'));
+      document.dispatchEvent(new Event('mcgui-inventory-anchor'));
     }
     return {
       tooltipDisabled: state.carried !== null,
@@ -199,7 +199,7 @@ export function useInventory<T extends InventoryItem>(options: UseInventoryOptio
       },
       onAuxClick: event => event.preventDefault(),
       onContextMenu: event => event.preventDefault(),
-      onFocus: event => { if (!event.currentTarget.hasAttribute('data-mcui-pointer-focus')) anchorAt(event.currentTarget); },
+      onFocus: event => { if (!event.currentTarget.hasAttribute('data-mcgui-pointer-focus')) anchorAt(event.currentTarget); },
       onKeyDown: event => {
         if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) { event.preventDefault(); pick('right', false); }
         else if (event.shiftKey && ['Enter', ' '].includes(event.key)) { event.preventDefault(); pick('left', true); }
@@ -267,13 +267,13 @@ function InventoryCursor({ item, anchor }: { item: InventoryItem | null; anchor:
       if (element.current) element.current.style.transform = `translate(${Math.floor(anchor.current.x - 8 * scale)}px, ${Math.floor(anchor.current.y - 8 * scale)}px)`;
     }
     function reposition() { position(); }
-    position(); document.addEventListener('pointermove', position); document.addEventListener('mcui-inventory-anchor', reposition);
-    return () => { document.removeEventListener('pointermove', position); document.removeEventListener('mcui-inventory-anchor', reposition); };
+    position(); document.addEventListener('pointermove', position); document.addEventListener('mcgui-inventory-anchor', reposition);
+    return () => { document.removeEventListener('pointermove', position); document.removeEventListener('mcgui-inventory-anchor', reposition); };
   }, [Boolean(item), mounted, scale, anchor]);
-  return item && mounted ? createPortal(<div ref={element} className="mcui-carried-stack" aria-hidden="true" data-count={item.count}
+  return item && mounted ? createPortal(<div ref={element} className="mcgui-carried-stack" aria-hidden="true" data-count={item.count}
     style={{ width: 16 * scale, height: 16 * scale, transform: `translate(${Math.floor(anchor.current.x - 8 * scale)}px, ${Math.floor(anchor.current.y - 8 * scale)}px)` }}>
-    <span className="mcui-carried-icon">{item.content}</span>
-    {item.count > 1 ? <MinecraftText className="mcui-carried-count" style={{ top: 9 * scale, right: -2 * scale }}>{String(item.count)}</MinecraftText> : null}
+    <span className="mcgui-carried-icon">{item.content}</span>
+    {item.count > 1 ? <MinecraftText className="mcgui-carried-count" style={{ top: 9 * scale, right: -2 * scale }}>{String(item.count)}</MinecraftText> : null}
   </div>, document.body) : null;
 }
 

@@ -76,7 +76,7 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
   if (inventory.length > 36 || armor.length > 4 || savedHotbars.length > 9 || savedHotbars.some(row => row.length > 9)) throw new Error('Creative inventory supports 36 player slots, 4 armor slots and 9 saved hotbars of 9 slots.');
   const kind = tab.kind ?? 'category';
   const texture = assets.textures?.[kind === 'inventory' ? 'creative.inventory' : kind === 'search' ? 'creative.search' : 'creative.items'];
-  if (!texture) throw new Error('Missing creative inventory assets. Re-run mcui-assets extract with the current CLI.');
+  if (!texture) throw new Error('Missing creative inventory assets. Re-run mcgui-assets extract with the current CLI.');
   // Build category order once per catalogue, rather than filter/sort on every switch.
   const categories = useMemo(() => {
     const result = new Map<string, T[]>();
@@ -110,14 +110,14 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
   const restoreCellFocus = useRef<number | null>(null);
   const wheelPoint = useRef<{ x: number; y: number } | null>(null);
   const rememberCellFocus = useCallback(() => {
-    const cells = catalogueRoot.current?.querySelectorAll<HTMLButtonElement>('[data-mcui-slot]');
+    const cells = catalogueRoot.current?.querySelectorAll<HTMLButtonElement>('[data-mcgui-slot]');
     const index = cells ? [...cells].indexOf(document.activeElement as HTMLButtonElement) : -1;
     restoreCellFocus.current = index >= 0 ? index : null;
   }, []);
   useLayoutEffect(() => {
     const index = restoreCellFocus.current;
     restoreCellFocus.current = null;
-    if (index !== null && catalogueRoot.current?.contains(document.activeElement)) catalogueRoot.current.querySelectorAll<HTMLButtonElement>('[data-mcui-slot]')[index]?.focus({ preventScroll: true });
+    if (index !== null && catalogueRoot.current?.contains(document.activeElement)) catalogueRoot.current.querySelectorAll<HTMLButtonElement>('[data-mcgui-slot]')[index]?.focus({ preventScroll: true });
     const point = wheelPoint.current;
     wheelPoint.current = null;
     if (point && catalogueRoot.current) refreshTooltipAt(catalogueRoot.current, point.x, point.y);
@@ -156,7 +156,7 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
   }, [choose, tabs]);
   const tabButtons = useMemo(() => tabs.map((entry, index) => <CreativeTabButton key={entry.id} entry={entry} index={index} total={tabs.length}
     selected={entry.id === tab.id} screenId={id} onChoose={choose} onNavigate={navigate} />), [tabs, tab.id, id, choose, navigate]);
-  const title = useMemo(() => kind !== 'inventory' ? <MinecraftText shadow={false} className="mcui-creative-title"
+  const title = useMemo(() => kind !== 'inventory' ? <MinecraftText shadow={false} className="mcgui-creative-title"
     style={{ position: 'absolute', left: 8 * scale, top: (6 + layout.top) * scale, maxWidth: (kind === 'search' ? 71 : 180) * scale }}>{tab.label}</MinecraftText> : null,
   [kind, scale, tab.label]);
   const searchInput = useMemo(() => kind === 'search' ? <CreativeSearch inputRef={search} value={query} onChange={setQuery}
@@ -176,7 +176,7 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
         count={item?.count} tooltip={item?.tooltip} disabled={item?.disabled}>{item?.content}</Slot>;
     })}
   </CanvasInventoryGrid>, [inventory, getSlotProps, playerView, scale, renderer]);
-  return <section ref={root} aria-label="Creative inventory" className={`mcui-creative ${className}`} data-tab={tab.id}
+  return <section ref={root} aria-label="Creative inventory" className={`mcgui-creative ${className}`} data-tab={tab.id}
     style={{ position: 'relative', width: layout.width * scale, height: (layout.height + layout.top + layout.bottom) * scale, ...style }}
     onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) hotbarKey.current = null; }}
     onKeyUp={event => { if (event.key.toLowerCase() === hotbarKey.current) hotbarKey.current = null; }}
@@ -191,10 +191,10 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
       } else if (key === 'escape') hotbarKey.current = null;
       else if (key === '/' && tabs.some(tab => tab.kind === 'search')) { event.preventDefault(); choose(tabs.find(tab => tab.kind === 'search')!); }
     }}>
-    <div role="tablist" aria-label="Creative categories" className="mcui-creative-tabs">
+    <div role="tablist" aria-label="Creative categories" className="mcgui-creative-tabs">
       {tabButtons}
     </div>
-    <svg className="mcui-sprite mcui-creative-background" aria-hidden="true" focusable="false" width={195 * scale} height={136 * scale}
+    <svg className="mcgui-sprite mcgui-creative-background" aria-hidden="true" focusable="false" width={195 * scale} height={136 * scale}
       viewBox={`0 0 ${195 * texture.pixelWidth / 256} ${136 * texture.pixelHeight / 256}`} style={position(0, 0)}>
       <image href={assetUrl(baseUrl, texture.file)} width={texture.pixelWidth} height={texture.pixelHeight} />
     </svg>
@@ -204,11 +204,11 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
         <InventoryGrid label="Creative player inventory" style={position(layout.inventory.x, layout.inventory.y)}>{Array.from({ length: 27 }, (_, index) => playerCell('inventory', index, inventory[index]))}</InventoryGrid>
         {layout.armor.map((point, index) => <div key={index} style={position(point.x, point.y)}>{playerCell('armor', index, armor[index])}</div>)}
         <div style={position(layout.offhand.x, layout.offhand.y)}>{playerCell('offhand', 0, offhand)}</div>
-        <div className="mcui-creative-player" style={{ ...position(73, 6), width: 32 * scale, height: 43 * scale }}>{playerPreview}</div>
+        <div className="mcgui-creative-player" style={{ ...position(73, 6), width: 32 * scale, height: 43 * scale }}>{playerPreview}</div>
         <div style={position(layout.trash.x, layout.trash.y)}><Slot label="Destroy item" tooltip="Destroy Item\nShift-click to clear inventory" background={false} disabled={!onDiscard}
           onClick={event => onDiscard?.(event.shiftKey)} onContextMenu={event => { event.preventDefault(); onDiscard?.(event.shiftKey); }} /></div>
       </> : <>
-        <div ref={catalogueRoot} id={`${id}-catalogue`} className="mcui-creative-catalogue" style={position(layout.catalogue.x, layout.catalogue.y)}
+        <div ref={catalogueRoot} id={`${id}-catalogue`} className="mcgui-creative-catalogue" style={position(layout.catalogue.x, layout.catalogue.y)}
           onKeyDownCapture={event => {
             if (event.key === 'PageDown' || event.key === 'PageUp') { event.preventDefault(); scrollTo(row + (event.key === 'PageDown' ? 5 : -5)); }
           }}>
@@ -219,11 +219,11 @@ export function CreativeInventoryScreen<T extends CreativeItem>({ items, tabs = 
           })}</CanvasInventoryGrid>
         </div>
         <CreativeScrollbar controls={`${id}-catalogue`} row={row} maxRow={maxRow} onChange={scrollTo} style={position(layout.scroll.x, layout.scroll.y)} />
-        <span role="status" className="mcui-sr-only">{kind === 'saved' ? 'C plus 1–9 saves a hotbar. X plus 1–9 loads it.' : `${filtered.length} items${filtered.length === 0 ? '. No matching items.' : ''}`}</span>
+        <span role="status" className="mcgui-sr-only">{kind === 'saved' ? 'C plus 1–9 saves a hotbar. X plus 1–9 loads it.' : `${filtered.length} items${filtered.length === 0 ? '. No matching items.' : ''}`}</span>
       </>}
       {hotbar}
     </div>
-    <span className="mcui-sr-only" role="status">{announcement}</span>
+    <span className="mcgui-sr-only" role="status">{announcement}</span>
   </section>;
 }
 
@@ -244,7 +244,7 @@ const CreativeTabButton = memo(function CreativeTabButton({ entry, index, total,
   return <div style={{ position: 'absolute', left: point.x * scale, top: (point.y + layout.top) * scale, zIndex: selected ? 3 : 0 }}>
     <Tooltip content={entry.label}><button type="button" role="tab" id={`${screenId}-tab-${index}`}
       aria-label={entry.label} aria-selected={selected} aria-controls={`${screenId}-panel`} tabIndex={selected ? 0 : -1}
-      className="mcui-creative-tab" style={{ position: 'relative', width: 26 * scale, height: 32 * scale }}
+      className="mcgui-creative-tab" style={{ position: 'relative', width: 26 * scale, height: 32 * scale }}
       onPointerDown={event => { if (event.button === 0 && event.pointerType !== 'touch') onChoose(entry); }}
       onClick={event => { if (event.detail === 0 || (event.nativeEvent as PointerEvent).pointerType === 'touch') onChoose(entry); }}
       onKeyDown={event => {
@@ -252,7 +252,7 @@ const CreativeTabButton = memo(function CreativeTabButton({ entry, index, total,
         if (next !== undefined) { event.preventDefault(); onNavigate(next); }
       }}>
       <Sprite name={`creative.tab.${entry.row}.${selected ? 'selected' : 'unselected'}.${entry.column + 1}` as CreativeTabSprite} width={26} height={32} />
-      <span className="mcui-creative-tab-icon" aria-hidden="true" style={{ left: 5 * scale, top: (entry.row === 'top' ? 9 : 7) * scale, width: 16 * scale, height: 16 * scale }}>
+      <span className="mcgui-creative-tab-icon" aria-hidden="true" style={{ left: 5 * scale, top: (entry.row === 'top' ? 9 : 7) * scale, width: 16 * scale, height: 16 * scale }}>
         {entry.icon ?? (entry.iconStackKey ? <ItemIcon stackKey={entry.iconStackKey} fallback={<MinecraftText shadow={false}>{entry.label.slice(0, 2)}</MinecraftText>} /> : <MinecraftText shadow={false}>{entry.label.slice(0, 2)}</MinecraftText>)}
       </span>
     </button></Tooltip>
@@ -267,7 +267,7 @@ function CreativeScrollbar({ controls, row, maxRow, onChange, style }: { control
     onChange(Math.round(Math.max(0, Math.min(1, offset / layout.scroll.travel)) * maxRow));
   }
   return <div role="scrollbar" aria-label="Creative item scroll" aria-controls={controls} aria-orientation="vertical" aria-valuemin={0} aria-valuemax={maxRow} aria-valuenow={row}
-    aria-disabled={!maxRow} tabIndex={maxRow ? 0 : -1} className="mcui-creative-scroll" style={{ ...style, width: 12 * scale, height: 110 * scale }}
+    aria-disabled={!maxRow} tabIndex={maxRow ? 0 : -1} className="mcgui-creative-scroll" style={{ ...style, width: 12 * scale, height: 110 * scale }}
     onPointerDown={event => { if (!maxRow || event.button !== 0) return; event.preventDefault(); event.currentTarget.focus(); drag.current = event.pointerId; event.currentTarget.setPointerCapture(event.pointerId); at(event.currentTarget, event.clientY); }}
     onPointerMove={event => { if (drag.current === event.pointerId) at(event.currentTarget, event.clientY); }}
     onPointerUp={event => { if (drag.current === event.pointerId) { drag.current = null; event.currentTarget.releasePointerCapture(event.pointerId); } }}
@@ -296,7 +296,7 @@ function CreativeSearch({ value, onChange, inputRef, style }: { value: string; o
     }
     return value.length;
   }
-  return <span className="mcui-creative-search" style={{ ...style, width: 80 * scale, height: 9 * scale }}>
+  return <span className="mcgui-creative-search" style={{ ...style, width: 80 * scale, height: 9 * scale }}>
     <input ref={inputRef} aria-label="Search items" value={value} maxLength={50} autoComplete="off" spellCheck={false}
       onChange={event => { onChange(event.currentTarget.value); sync(event.currentTarget); }} onSelect={event => sync(event.currentTarget)}
       onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); drag.current = null; }}
@@ -314,10 +314,10 @@ function CreativeSearch({ value, onChange, inputRef, style }: { value: string; o
       }}
       onPointerUp={event => { drag.current = null; if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); }}
       onPointerCancel={() => { drag.current = null; }} />
-    <span className="mcui-creative-search-drawing" aria-hidden="true">
-      {focused && start !== end ? <span className="mcui-creative-search-selection" style={{ left: (start - offset) * scale, width: (end - start) * scale }} /> : null}
+    <span className="mcgui-creative-search-drawing" aria-hidden="true">
+      {focused && start !== end ? <span className="mcgui-creative-search-selection" style={{ left: (start - offset) * scale, width: (end - start) * scale }} /> : null}
       <MinecraftText shadow={false} style={{ transform: `translateX(${-offset * scale}px)` }}>{value}</MinecraftText>
-      {focused && start === end ? <span className="mcui-creative-search-caret" style={{ left: (end - offset) * scale, width: scale }} /> : null}
+      {focused && start === end ? <span className="mcgui-creative-search-caret" style={{ left: (end - offset) * scale, width: scale }} /> : null}
     </span>
   </span>;
 }

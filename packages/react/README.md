@@ -6,7 +6,7 @@ React 19 components backed by assets extracted locally with `@mcgui/assets`. Ini
 import { Button, MinecraftProvider } from '@mcgui/react';
 import '@mcgui/react/styles.css';
 
-<MinecraftProvider assets={manifest} baseUrl="/mcui" scale={2}>
+<MinecraftProvider assets={manifest} baseUrl="/mcgui" scale={2}>
   <Button onClick={onResume}>Back to Game</Button>
 </MinecraftProvider>
 ```

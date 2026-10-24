@@ -14,7 +14,7 @@ const triggers = new WeakMap<Element, (x: number, y: number) => void>();
 /** Internal: recycled cells can move beneath a stationary pointer without pointerenter. */
 export function refreshTooltipAt(root: Element, x: number, y: number) {
   if (activeTooltip === null) return;
-  const target = document.elementFromPoint(x, y)?.closest('.mcui-tooltip-trigger');
+  const target = document.elementFromPoint(x, y)?.closest('.mcgui-tooltip-trigger');
   const activate = target && root.contains(target) ? triggers.get(target) : undefined;
   if (activate) activate(x, y);
   else if (activeTooltip !== null) { activeTooltip = null; for (const listener of listeners) listener(); }
@@ -101,7 +101,7 @@ export function Tooltip({ children, content, maxWidth = 240, disabled = false }:
   const height = Math.max(1, Math.min(textHeight + 24, viewport ? Math.floor((viewport.height - 8) / scale) : textHeight + 24));
   const position = viewport ? placeTooltip(point, { width: width * scale, height: height * scale }, viewport, 12 * scale) : { x: 0, y: 0 };
   const description = [children.props['aria-describedby'], visible ? id : undefined].filter(Boolean).join(' ') || undefined;
-  return <><span ref={trigger} className="mcui-tooltip-trigger"
+  return <><span ref={trigger} className="mcgui-tooltip-trigger"
     onPointerEnter={event => {
       if (event.pointerType === 'touch') return;
       activity.current.trigger = true; cancelClose(); anchor(event.clientX, event.clientY); setOpen(true);
@@ -111,14 +111,14 @@ export function Tooltip({ children, content, maxWidth = 240, disabled = false }:
     onFocusCapture={focus} onBlurCapture={event => blur(event.relatedTarget)}>
     {cloneElement(children, { 'aria-describedby': description })}
     </span>
-    {visible && viewport ? createPortal(<div id={id} role="tooltip" ref={panel} className="mcui-tooltip"
+    {visible && viewport ? createPortal(<div id={id} role="tooltip" ref={panel} className="mcgui-tooltip"
       style={{ left: position.x, top: position.y, width: width * scale, height: height * scale }}
       onPointerEnter={() => { activity.current.panel = true; cancelClose(); }}
       onPointerLeave={() => { activity.current.panel = false; closeSoon(); }}
       onFocusCapture={cancelClose} onBlurCapture={event => blur(event.relatedTarget)}>
       <Sprite name="tooltip.background" width={width} height={height} />
       <Sprite name="tooltip.frame" width={width} height={height} />
-      <div className="mcui-tooltip-content" tabIndex={textHeight + 24 > height ? 0 : undefined} style={{ inset: 12 * scale, overflow: 'auto' }}>
+      <div className="mcgui-tooltip-content" tabIndex={textHeight + 24 > height ? 0 : undefined} style={{ inset: 12 * scale, overflow: 'auto' }}>
         {lines.map((line, index) => <div key={index} style={{ height: (assets.font.lineHeight + (index === 0 && lines.length > 1 ? 2 : 0)) * scale }}>
           <MinecraftText>{line}</MinecraftText>
         </div>)}

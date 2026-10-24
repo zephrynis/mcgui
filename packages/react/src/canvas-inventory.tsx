@@ -139,7 +139,7 @@ function CanvasLayer({ items, columns, visible, onReady }: { items: readonly (Dr
         };
         draw(true); draw(false);
       };
-      const buttons = grid.querySelectorAll<HTMLButtonElement>('[data-mcui-slot]');
+      const buttons = grid.querySelectorAll<HTMLButtonElement>('[data-mcgui-slot]');
       const highlighted: number[] = [];
       function drawCell(item: DrawItem, index: number, highlight: boolean) {
         const x = (index % columns) * 18 + 3, y = Math.floor(index / columns) * 18 + 3;
@@ -155,7 +155,7 @@ function CanvasLayer({ items, columns, visible, onReady }: { items: readonly (Dr
       }
       items.forEach((item, index) => {
         if (!item) return;
-        if (!item.disabled && buttons[index]?.matches(':hover, :focus-visible:not([data-mcui-pointer-focus]), [data-selected]')) highlighted.push(index);
+        if (!item.disabled && buttons[index]?.matches(':hover, :focus-visible:not([data-mcgui-pointer-focus]), [data-selected]')) highlighted.push(index);
         else drawCell(item, index, false);
       });
       for (const index of highlighted) drawCell(items[index]!, index, true);
@@ -171,7 +171,7 @@ function CanvasLayer({ items, columns, visible, onReady }: { items: readonly (Dr
       window.removeEventListener('resize', schedule); media.removeEventListener('change', schedule);
     };
   }, [assets, baseUrl]);
-  return <canvas ref={ref} aria-hidden="true" className="mcui-inventory-canvas" data-ready="false"
+  return <canvas ref={ref} aria-hidden="true" className="mcgui-inventory-canvas" data-ready="false"
     style={{ position: 'absolute', left: -3 * scale, top: -3 * scale, width: (columns * 18 + 6) * scale,
       height: (Math.ceil(items.length / columns) * 18 + 6) * scale, visibility: visible ? 'visible' : 'hidden', pointerEvents: 'none', zIndex: 1, imageRendering: 'pixelated' }} />;
 }

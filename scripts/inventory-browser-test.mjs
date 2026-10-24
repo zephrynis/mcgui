@@ -4,10 +4,10 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { chromium } from 'playwright';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const executablePath = process.env.MCUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const executablePath = process.env.MCGUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
 const browser = await chromium.launch({ executablePath, headless: true });
-const errors = [], evidence = path.join(tmpdir(), 'mcui-inventory');
+const errors = [], evidence = path.join(tmpdir(), 'mcgui-inventory');
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
   page.setDefaultTimeout(10000);
@@ -17,9 +17,9 @@ try {
   await page.getByRole('heading', { name: 'Inventory workbench', exact: true }).waitFor(); assert.equal(page.url(), url);
   const lab = page.getByRole('region', { name: 'Inventory workbench' });
   await lab.waitFor(); await lab.scrollIntoViewIfNeeded();
-  const chest = page.locator('.mcui-chest'), shard = page.getByRole('button', { name: 'Diamond, 32', exact: true });
-  assert.equal(await chest.locator('[data-mcui-slot]').count(), 63);
-  assert.equal(await chest.locator('.mcui-slot-background').count(), 0);
+  const chest = page.locator('.mcgui-chest'), shard = page.getByRole('button', { name: 'Diamond, 32', exact: true });
+  assert.equal(await chest.locator('[data-mcgui-slot]').count(), 63);
+  assert.equal(await chest.locator('.mcgui-slot-background').count(), 0);
   await shard.hover();
   const tooltip = page.getByRole('tooltip'); await tooltip.waitFor();
   assert.match(await tooltip.innerText(), /Diamond/);
@@ -62,7 +62,7 @@ try {
 
   for (const rows of [1, 2, 3, 4, 5, 6]) {
     await page.getByLabel('Chest rows').selectOption(String(rows));
-    assert.equal(await chest.locator('[data-mcui-slot]').count(), rows * 9 + 36);
+    assert.equal(await chest.locator('[data-mcgui-slot]').count(), rows * 9 + 36);
     const box = await chest.boundingBox(); assert.equal(box.width, 352); assert.equal(box.height, (114 + rows * 18) * 2);
   }
   for (const scale of [1, 2, 3, 4]) {
@@ -70,7 +70,7 @@ try {
     assert.equal((await chest.boundingBox()).width, 176 * scale);
     for (const trigger of [shard, page.getByRole('button', { name: 'Try a longer tooltip' })]) {
       await trigger.hover(); await tooltip.waitFor();
-      const dimensions = await tooltip.locator('.mcui-tooltip-content').evaluate(element => ({
+      const dimensions = await tooltip.locator('.mcgui-tooltip-content').evaluate(element => ({
         width: element.clientWidth, height: element.clientHeight,
         scrollWidth: element.scrollWidth, scrollHeight: element.scrollHeight,
       }));
@@ -90,15 +90,15 @@ try {
   await page.screenshot({ path: `${evidence}-desktop.png` });
   await page.keyboard.press('Escape');
 
-  await page.getByLabel('Asset bundle').selectOption('mcui-pack'); await chest.waitFor();
-  const pack = await (await page.request.get(new URL('/mcui-pack/manifest.json', url).href)).json();
-  assert.equal(await chest.locator('.mcui-chest-background image').first().getAttribute('href'), `/mcui-pack/${pack.textures['container.chest'].file}`);
+  await page.getByLabel('Asset bundle').selectOption('mcgui-pack'); await chest.waitFor();
+  const pack = await (await page.request.get(new URL('/mcgui-pack/manifest.json', url).href)).json();
+  assert.equal(await chest.locator('.mcgui-chest-background image').first().getAttribute('href'), `/mcgui-pack/${pack.textures['container.chest'].file}`);
   assert.equal(pack.textures['container.chest'].pixelWidth, 512);
   assert.equal((await chest.boundingBox()).width, 352);
   await lab.scrollIntoViewIfNeeded(); await shard.hover(); await tooltip.waitFor();
-  assert.equal(await tooltip.locator('.mcui-sprite').first().locator('image').first().getAttribute('href'), `/mcui-pack/${pack.sprites['tooltip.background'].file}`);
+  assert.equal(await tooltip.locator('.mcgui-sprite').first().locator('image').first().getAttribute('href'), `/mcgui-pack/${pack.sprites['tooltip.background'].file}`);
   await page.screenshot({ path: `${evidence}-pack.png` }); await page.keyboard.press('Escape');
-  await page.getByLabel('Asset bundle').selectOption('mcui'); await chest.waitFor();
+  await page.getByLabel('Asset bundle').selectOption('mcgui'); await chest.waitFor();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await chest.scrollIntoViewIfNeeded(); await shard.hover(); await tooltip.waitFor();
@@ -113,16 +113,16 @@ try {
   const longTooltip = page.getByRole('button', { name: 'Try a longer tooltip' });
   await longTooltip.scrollIntoViewIfNeeded(); await page.mouse.move(0, 0); await longTooltip.focus();
   await tooltip.waitFor(); await withinViewport();
-  assert.ok(await tooltip.locator('.mcui-tooltip-content > div').count() > 4);
+  assert.ok(await tooltip.locator('.mcgui-tooltip-content > div').count() > 4);
   await page.setViewportSize({ width: 320, height: 640 }); await withinViewport();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   await page.setViewportSize({ width: 320, height: 240 });
   await longTooltip.focus(); await tooltip.waitFor(); await withinViewport();
-  const scrollContent = tooltip.locator('.mcui-tooltip-content');
+  const scrollContent = tooltip.locator('.mcgui-tooltip-content');
   assert.equal(await scrollContent.getAttribute('tabindex'), '0');
   assert.ok(await scrollContent.evaluate(element => element.scrollHeight > element.clientHeight));
   await scrollContent.focus(); await scrollContent.press('Control+End');
-  await page.waitForFunction(() => document.querySelector('.mcui-tooltip-content')?.scrollTop > 0);
+  await page.waitForFunction(() => document.querySelector('.mcgui-tooltip-content')?.scrollTop > 0);
   await page.keyboard.press('Escape'); await tooltip.waitFor({ state: 'hidden' });
   assert.equal(await page.locator('vite-error-overlay').count(), 0); assert.deepEqual(errors, []);
   console.log('PASS: chest rows 1–6, scales 1–4, empty clicks without selection, counts, arrow/Home/End navigation, disabled slots, hotbar pickup, hover/focus/Escape tooltips, colors, portal placement, wrapping, viewport resize, 2× pack overrides, desktop/mobile layout, no browser errors.');

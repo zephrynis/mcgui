@@ -7,7 +7,7 @@ import { extractAssets, listInstallations } from '@mcgui/assets';
 const root = path.resolve('.local/demo-pack');
 const directory = path.join(root, 'assets/minecraft/textures/gui/sprites/widget');
 await mkdir(directory, { recursive: true });
-await writeFile(path.join(root, 'pack.mcmeta'), JSON.stringify({ pack: { min_format: [88, 0], max_format: 88, description: 'MCUI original moss test textures' } }, null, 2));
+await writeFile(path.join(root, 'pack.mcmeta'), JSON.stringify({ pack: { min_format: [88, 0], max_format: 88, description: 'MCGUI original moss test textures' } }, null, 2));
 for (const state of ['', '_highlighted', '_disabled']) {
   const png = new PNG({ width: 400, height: 40 });
   for (let y = 0; y < 40; y++) for (let x = 0; x < 400; x++) {
@@ -133,11 +133,11 @@ for (const name of ['scroller', 'scroller_disabled']) {
   await writeFile(path.join(creativeSprites, `${name}.png`), PNG.sync.write(image));
 }
 const installed = (await listInstallations()).filter(item => item.version === '26.2');
-const clientJar = process.env.MCUI_CLIENT_JAR ?? (installed.length === 1 ? installed[0].clientJar : undefined);
-if (!clientJar) throw new Error('Set MCUI_CLIENT_JAR to your 26.2 client JAR.');
+const clientJar = process.env.MCGUI_CLIENT_JAR ?? (installed.length === 1 ? installed[0].clientJar : undefined);
+if (!clientJar) throw new Error('Set MCGUI_CLIENT_JAR to your 26.2 client JAR.');
 // Remove the obsolete generated gem override; items keep their real game textures.
 await unlink(path.join(root, 'assets/minecraft/textures/item/diamond.png')).catch(error => {
   if (error.code !== 'ENOENT') throw error;
 });
-await extractAssets({ clientJar, packs: [root], out: 'apps/storybook/public/mcui-pack',items:true,java:process.env.MCUI_JAVA,catalogueFile:process.env.MCUI_CATALOGUE_FILE });
+await extractAssets({ clientJar, packs: [root], out: 'apps/storybook/public/mcgui-pack',items:true,java:process.env.MCGUI_JAVA,catalogueFile:process.env.MCGUI_CATALOGUE_FILE });
 console.log('Prepared original demo pack and local Storybook bundle.');

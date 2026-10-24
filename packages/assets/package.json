@@ -9,7 +9,7 @@
     "dist"
   ],
   "bin": {
-    "mcui-assets": "./dist/cli.js"
+    "mcgui-assets": "./dist/cli.js"
   },
   "exports": {
     ".": {
@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && node -e \"require('node:fs').mkdirSync('dist/java',{recursive:true});require('node:fs').copyFileSync('src/java/McuiCatalogue.java','dist/java/McuiCatalogue.java')\""
+    "build": "tsc -p tsconfig.build.json && node -e \"require('node:fs').mkdirSync('dist/java',{recursive:true});require('node:fs').copyFileSync('src/java/McguiCatalogue.java','dist/java/McguiCatalogue.java')\""
   },
   "dependencies": {
     "@mcgui/core": "0.1.0",

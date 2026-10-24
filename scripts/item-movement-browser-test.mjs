@@ -4,8 +4,8 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { chromium } from 'playwright';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const executablePath = process.env.MCUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const executablePath = process.env.MCGUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
 const browser = await chromium.launch({ executablePath, headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 }), errors = [];
@@ -13,8 +13,8 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (['error', 'warning'].includes(message.type())) errors.push(message.text()); });
   await page.goto(url); assert.equal(page.url(), url); await page.getByRole('heading', { name: 'Inventory workbench', exact: true }).waitFor();
-  const chest = page.locator('.mcui-chest'), furnace = page.locator('.mcui-furnace'), cursor = page.locator('.mcui-carried-stack');
-  const slot = index => chest.locator(`[data-mcui-cell="${index}"]`), furnaceSlot = index => furnace.locator(`[data-mcui-cell="${index}"]`);
+  const chest = page.locator('.mcgui-chest'), furnace = page.locator('.mcgui-furnace'), cursor = page.locator('.mcgui-carried-stack');
+  const slot = index => chest.locator(`[data-mcgui-cell="${index}"]`), furnaceSlot = index => furnace.locator(`[data-mcgui-cell="${index}"]`);
   const label = index => slot(index).getAttribute('aria-label');
   const reset = async () => { await page.getByRole('button', { name: 'Reset items', exact: true }).click(); await chest.scrollIntoViewIfNeeded(); };
   const carrying = async expected => expected === 0 ? assert.equal(await cursor.count(), 0) : assert.equal(await cursor.getAttribute('data-count'), String(expected));
@@ -24,10 +24,10 @@ try {
     await page.evaluate(({ index, eventType }) => {
       window.inventoryFrame = new Promise(resolve => {
         document.addEventListener(eventType, () => requestAnimationFrame(() => {
-          const cell = document.querySelector(`.mcui-chest [data-mcui-cell="${index}"]`);
-          const held = document.querySelector('.mcui-carried-stack');
-          resolve({ label: cell.getAttribute('aria-label'), slotCount: cell.querySelector('.mcui-slot-count .mcui-sr-only')?.textContent ?? null,
-            carried: held?.getAttribute('data-count') ?? null, carriedCount: held?.querySelector('.mcui-carried-count .mcui-sr-only')?.textContent ?? null });
+          const cell = document.querySelector(`.mcgui-chest [data-mcgui-cell="${index}"]`);
+          const held = document.querySelector('.mcgui-carried-stack');
+          resolve({ label: cell.getAttribute('aria-label'), slotCount: cell.querySelector('.mcgui-slot-count .mcgui-sr-only')?.textContent ?? null,
+            carried: held?.getAttribute('data-count') ?? null, carriedCount: held?.querySelector('.mcgui-carried-count .mcgui-sr-only')?.textContent ?? null });
         }), { once: true, capture: true });
       });
     }, { index, eventType });
@@ -45,15 +45,15 @@ try {
   assert.match(await label(54),/^Empty/);assert.match(await label(81),/^Empty/);
   await slot(4).click();assert.equal(await label(4),'Emerald, 20');await carrying(0);
   await reset();await slot(54).click({modifiers:['Shift']});
-  await page.locator('.mcui-creative [data-mcui-cell="81"]').dblclick();await carrying(4);
+  await page.locator('.mcgui-creative [data-mcgui-cell="81"]').dblclick();await carrying(4);
   assert.equal(await label(3),'Emerald, 16'); // creative collection stays in the player inventory
   await reset();
   await slot(4).click(); await page.mouse.move(0, 0);
   assert.equal(await slot(4).getAttribute('aria-pressed'), null); assert.equal(await slot(4).getAttribute('data-selected'), null);
-  assert.equal(await slot(4).locator('.mcui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility), 'hidden'); await carrying(0);
+  assert.equal(await slot(4).locator('.mcgui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility), 'hidden'); await carrying(0);
   // A same-slot mouse click can retain :focus-visible after keyboard use.
   // Test both mouse buttons, plus focus transferred from a text input.
-  const highlight = index => slot(index).locator('.mcui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility);
+  const highlight = index => slot(index).locator('.mcgui-slot-highlight').first().evaluate(el => getComputedStyle(el).visibility);
   for (const button of ['left', 'right']) {
     await slot(4).press('Space'); assert.equal(await highlight(4), 'visible');
     await slot(4).click({ button }); await page.mouse.move(0, 0); assert.equal(await highlight(4), 'hidden');
@@ -100,7 +100,7 @@ try {
   await slot(6).click(); await carrying(0); assert.equal(await label(6), 'Diamond, 2');
   await reset(); await slot(0).click(); await drag([3, 4, 5], 'right');
   for (const index of [3, 4, 5]) assert.equal(await label(index), 'Diamond'); await carrying(29);
-  await page.screenshot({ path: path.join(tmpdir(), 'mcui-inventory-moving.png') });
+  await page.screenshot({ path: path.join(tmpdir(), 'mcgui-inventory-moving.png') });
   await reset(); await slot(0).click(); await drag([3, 4, 5], 'left', true);
   for (const index of [3, 4, 5]) assert.match(await label(index), /^Empty/); await carrying(32);
   // Releasing outside a slot keeps the carried item rather than dropping it into a nonexistent world.
@@ -125,7 +125,7 @@ try {
   await reset(); await slot(0).click();
   await page.getByLabel('Chest rows').selectOption('1'); await carrying(32); await slot(8).click();
   await page.getByLabel('Chest rows').selectOption('6'); assert.equal(await label(8), 'Diamond, 32');
-  await slot(8).click(); await page.getByLabel('Asset bundle').selectOption('mcui-pack'); await chest.waitFor(); await carrying(32); await slot(9).click(); await carrying(0);
+  await slot(8).click(); await page.getByLabel('Asset bundle').selectOption('mcgui-pack'); await chest.waitFor(); await carrying(32); await slot(9).click(); await carrying(0);
   for (const scale of [1, 2, 3, 4]) {
     await page.getByLabel('GUI scale').selectOption(String(scale)); await slot(9).click();
     const bounds = await cursor.boundingBox(); assert.equal(bounds.width, 16 * scale); assert.equal(bounds.height, 16 * scale);
@@ -134,11 +134,11 @@ try {
   await page.getByLabel('GUI scale').selectOption('2'); await page.getByLabel('Chest rows').selectOption('3');
   await page.setViewportSize({ width: 390, height: 844 }); await chest.scrollIntoViewIfNeeded(); await slot(9).click();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-  await page.screenshot({ path: path.join(tmpdir(), 'mcui-inventory-moving-mobile.png') });
+  await page.screenshot({ path: path.join(tmpdir(), 'mcgui-inventory-moving-mobile.png') });
   assert.equal(await page.locator('vite-error-overlay').count(), 0); assert.deepEqual(errors, []);
   const touch = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const touchPage = await touch.newPage(); await touchPage.goto(url);
-  const touchSlot = index => touchPage.locator(`.mcui-chest [data-mcui-cell="${index}"]`);
+  const touchSlot = index => touchPage.locator(`.mcgui-chest [data-mcgui-cell="${index}"]`);
   await touchSlot(0).tap(); await touchSlot(3).tap();
   assert.equal(await touchSlot(3).getAttribute('aria-label'), 'Diamond, 32'); await touch.close();
   console.log('PASS: empty clicks without selection, pickup/place/split/merge/swap, shift transfers, drag distribution/cancel, pointer-following stack, keyboard and touch, furnace restrictions, shared inventory, row/pack/scale changes, mobile and no browser errors.');

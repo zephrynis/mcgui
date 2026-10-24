@@ -71,7 +71,7 @@ test('creative extraction follows pack precedence for sheets and tabs; old manif
   assert.equal(assets.sprites['creative.scroller']?.source, 'vanilla');
   assert.deepEqual(await validateBundle(f.out), assets);
   const legacy = parseManifest({ ...assets, textures: undefined });
-  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(CreativeInventoryScreen, { items: [] }) })), /Re-run mcui-assets/);
+  assert.throws(() => renderToString(createElement(MinecraftProvider, { assets: legacy, baseUrl: '/', children: createElement(CreativeInventoryScreen, { items: [] }) })), /Re-run mcgui-assets/);
 });
 
 test('creative SSR has accessible tabs, 45 catalogue cells and shared hotbar; inventory tab exposes equipment and delete slot', async t => {
@@ -81,14 +81,14 @@ test('creative SSR has accessible tabs, 45 catalogue cells and shared hotbar; in
   const html = render();
   assert.equal((html.match(/role="tab"/g) ?? []).length, 13);
   assert.equal((html.match(/aria-selected="true"/g) ?? []).length, 1);
-  assert.equal((html.match(/data-mcui-slot=""/g) ?? []).length, 54);
+  assert.equal((html.match(/data-mcgui-slot=""/g) ?? []).length, 54);
   assert.match(render('search'), /aria-label="Search items"/);
   const inventory = render('inventory');
-  assert.equal((inventory.match(/data-mcui-slot=""/g) ?? []).length, 42);
+  assert.equal((inventory.match(/data-mcgui-slot=""/g) ?? []).length, 42);
   assert.match(inventory, /aria-label="Destroy item"/);
   assert.doesNotMatch(inventory, /aria-label="Creative item scroll"/);
   const canvas = render(undefined, 'canvas');
-  assert.equal((canvas.match(/data-mcui-slot=""/g) ?? []).length, 54);
+  assert.equal((canvas.match(/data-mcgui-slot=""/g) ?? []).length, 54);
   assert.match(canvas, /<canvas[^>]+aria-hidden="true"/);
   assert.match(canvas, /data-renderer="dom"/); // SSR retains real artwork until canvas is ready.
 });

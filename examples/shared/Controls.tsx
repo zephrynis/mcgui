@@ -22,8 +22,8 @@ export function Controls({ assets }: { assets: AssetManifest }) {
   ] });
   useEffect(() => setHydrated(true), []);
   return <main data-hydrated={hydrated}>
-    <h1>MCUI consumer</h1>
-    <MinecraftProvider assets={assets} baseUrl="/mcui" scale={scale}>
+    <h1>MCGUI consumer</h1>
+    <MinecraftProvider assets={assets} baseUrl="/mcgui" scale={scale}>
       <ExtractedItem />
       <form onSubmit={event => { event.preventDefault(); const data = new FormData(event.currentTarget); setSubmitted(`${data.get('subtitles') ?? 'off'}:${data.get('volume')}`); }}
         onReset={() => { setChecked(false); setVolume(50); }}>

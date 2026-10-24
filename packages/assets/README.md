@@ -3,9 +3,9 @@
 Offline extraction of locally supplied Minecraft Java 26.2 GUI assets. Requires Node.js 22.18+.
 
 ```sh
-mcui-assets list
-mcui-assets extract --version 26.2 --out ./public/mcui
-mcui-assets validate ./public/mcui
+mcgui-assets list
+mcgui-assets extract --version 26.2 --out ./public/mcgui
+mcgui-assets validate ./public/mcgui
 ```
 
 Use `--client-jar` or `--minecraft-dir` for explicit installation selection. Repeat `--pack` for ordered ZIP/directory resource packs; later packs win. Use `--characters` to replace the default printable ASCII character set.
@@ -15,7 +15,7 @@ The extractor includes 50 sprites, chest/furnace/creative sheets, and bitmap fon
 Add `--items` to export the Java 26.2 creative catalogue and bake item icons:
 
 ```sh
-mcui-assets extract --version 26.2 --items --java /path/to/java --out public/mcui
+mcgui-assets extract --version 26.2 --items --java /path/to/java --out public/mcgui
 ```
 
 This optional step requires Java 25+ and the dependencies from an installed game. It runs our small Java source helper against your local client JAR without opening a game window. Prism and official-launcher metadata are discovered beside the installation. Custom launchers can provide `--version-metadata <version.json>` and `--libraries <Maven-library-directory>`. Missing dependencies produce an export error; nothing is downloaded. GUI-only extraction does not require Java.
@@ -32,7 +32,7 @@ Models bake at 64×64; untransformed generated textures retain their resolution 
 
 Item extraction also packs compatible icons into content-hashed PNG atlas pages, at most 512×512 each. Pages group icons by resolution and preserve catalogue order within each group. Identical images share a rectangle; no source pixels are rescaled. `icon.atlas` records the page's `file`, `pixelWidth`, `pixelHeight`, `x` and `y`; the crop size remains `icon.pixelWidth` × `icon.pixelHeight`. Original files remain available for older consumers. Oversized icons and resolutions that cannot align to 16 logical pixels stay as individual PNGs. Validation checks atlas bounds, hashes and dimensions. Generated pages are local assets, just like the extracted textures.
 
-For repeat builds, `exportCatalogue(clientJar, options)` returns the original JSON export as a Buffer. Save it locally, then pass `--items --catalogue-file <export.json>` to bake without Java. The exported data is part of your local asset workflow and is not shipped with MCUI. Do not use a manifest as the catalogue-file input.
+For repeat builds, `exportCatalogue(clientJar, options)` returns the original JSON export as a Buffer. Save it locally, then pass `--items --catalogue-file <export.json>` to bake without Java. The exported data is part of your local asset workflow and is not shipped with MCGUI. Do not use a manifest as the catalogue-file input.
 
 Current exports also retain the game's resolved damage/max-damage values, `hasFoil()` flag, and styled tooltip runs (color, bold, italic, underline, strikethrough). Plain tooltip lines remain available for search and older consumers. The extractor includes the resolved `misc/enchanted_glint_item.png` as `textures['item.glint']`; compatible packs can replace it. Re-export older catalogue JSON files to obtain item state and tooltip styles. Tooltips use the vanilla English language and no player context; item names still honor supported pack language replacements. Click/hover events, obfuscation, custom font providers and tooltip images are not interpreted.
 

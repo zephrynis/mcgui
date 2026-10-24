@@ -3,13 +3,13 @@ import { execFileSync } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const cpuSlowdown = Number(process.env.MCUI_BENCH_CPU ?? 4), runs = Number(process.env.MCUI_BENCH_RUNS ?? 2);
-const iconMode = process.env.MCUI_BENCH_ICONS ?? 'atlas';
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const cpuSlowdown = Number(process.env.MCGUI_BENCH_CPU ?? 4), runs = Number(process.env.MCGUI_BENCH_RUNS ?? 2);
+const iconMode = process.env.MCGUI_BENCH_ICONS ?? 'atlas';
 assert.ok(['atlas', 'files', 'compare'].includes(iconMode));
 const variants = (iconMode === 'compare' ? ['files', 'atlas'] : [iconMode]).flatMap(icons => ['dom', 'canvas'].map(renderer => ({ icons, renderer })));
 assert.ok(Number.isFinite(cpuSlowdown) && cpuSlowdown >= 1 && Number.isInteger(runs) && runs >= 1 && runs <= 10);
-const browser = await chromium.launch({ executablePath: process.env.MCUI_CHROME ?? execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(), headless: true });
+const browser = await chromium.launch({ executablePath: process.env.MCGUI_CHROME ?? execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(), headless: true });
 const results = [];
 try {
   for (let run = 0; run < runs; run++) for (const { icons, renderer } of run % 2 ? [...variants].reverse() : variants) {
@@ -27,10 +27,10 @@ try {
     const cdp = await context.newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', { rate: cpuSlowdown });
     await page.goto(url);
     await page.getByLabel('Inventory renderer', { exact: true }).selectOption(renderer);
-    await page.locator('.mcui-creative').getByRole('tab', { name: 'Search Items', exact: true }).click();
+    await page.locator('.mcgui-creative').getByRole('tab', { name: 'Search Items', exact: true }).click();
     await page.mouse.move(0, 0); await page.keyboard.press('Escape'); await page.evaluate(() => document.activeElement?.blur());
     const result = await page.evaluate(async renderer => {
-      const screen = document.querySelector('.mcui-creative'), grid = screen.querySelector('.mcui-creative-catalogue');
+      const screen = document.querySelector('.mcgui-creative'), grid = screen.querySelector('.mcgui-creative-catalogue');
       const bar = screen.querySelector('[role=scrollbar]'), samples = [];
       async function ready() {
         const deadline = performance.now() + 10000;
@@ -73,7 +73,7 @@ try {
       commitMedianMs: round(percentile(samples.map(sample => sample.commitMs), .5)), commitP95Ms: round(percentile(samples.map(sample => sample.commitMs), .95)),
       readyMedianMs: round(percentile(samples.map(sample => sample.artworkReadyMs), .5)), twoFramesMedianMs: round(percentile(samples.map(sample => sample.readyAndTwoFramesMs), .5)) };
   }));
-  const output = process.env.MCUI_BENCH_OUT ?? '/tmp/mcui-renderer-benchmark.json';
+  const output = process.env.MCGUI_BENCH_OUT ?? '/tmp/mcgui-renderer-benchmark.json';
   await writeFile(output, JSON.stringify({ url, browser: browser.version(), cpuSlowdown, runs, methodology: 'Synthetic one-row wheel events, 20 down then 20 back. DOM commit and artwork readiness measured separately. Two subsequent animation frames approximate a presentation opportunity; this is not a compositor/GPU frame-time or FPS measurement. Pointer is outside the grid; tooltips are closed. Fresh context per run, same preloading policy.', summary, results }, null, 2));
   console.table(summary); console.log(`Raw results: ${output}`);
 } finally { await browser.close(); }

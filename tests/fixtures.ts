@@ -15,7 +15,7 @@ export async function put(root: string, name: string, value: unknown): Promise<v
   await writeFile(target, Buffer.isBuffer(value) ? value : JSON.stringify(value));
 }
 export async function fixture() {
-  const root = await mkdtemp(path.join(tmpdir(), 'mcui-test-'));
+  const root = await mkdtemp(path.join(tmpdir(), 'mcgui-test-'));
   const vanilla = path.join(root, 'vanilla');
   await put(vanilla, 'version.json', { id: '26.2', pack_version: { resource_major: 88, resource_minor: 0 } });
   const metadata = { gui: { scaling: { type: 'nine_slice', width: 12, height: 8, border: 2 } } };
@@ -45,7 +45,7 @@ export async function fixture() {
 }
 export async function pack(root: string, name = 'pack') {
   const directory = path.join(root, name);
-  await put(directory, 'pack.mcmeta', { pack: { min_format: 88, max_format: 88, description: 'Original MCUI test fixture' } });
+  await put(directory, 'pack.mcmeta', { pack: { min_format: 88, max_format: 88, description: 'Original MCGUI test fixture' } });
   return directory;
 }
 

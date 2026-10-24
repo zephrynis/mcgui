@@ -12,8 +12,8 @@ const preview: Preview = {
     bundle: {
       description: 'Locally extracted asset bundle',
       toolbar: { title: 'Asset bundle', dynamicTitle: true, items: [
-        { value: 'mcui', title: 'Vanilla (local)' },
-        { value: 'mcui-pack', title: 'Test pack (local)' },
+        { value: 'mcgui', title: 'Vanilla (local)' },
+        { value: 'mcgui-pack', title: 'Test pack (local)' },
       ] },
     },
   },
@@ -26,6 +26,6 @@ const preview: Preview = {
     backgrounds: { options: { dark: { name: 'Dark', value: '#242424' }, light: { name: 'Light', value: '#ffffff' } } },
     options: { storySort: { order: ['Primitives', 'Controls', 'Inventory', 'Screens', 'Items', 'Examples'] } },
   },
-  initialGlobals: { scale: 2, bundle: 'mcui', backgrounds: { value: 'dark' } },
+  initialGlobals: { scale: 2, bundle: 'mcgui', backgrounds: { value: 'dark' } },
 };
 export default preview;

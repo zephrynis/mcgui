@@ -13,12 +13,12 @@ import net.minecraft.core.*;
 import net.minecraft.resources.*;
 import net.minecraft.tags.*;
 
-/** MCUI-owned adapter for the locally installed, named Java 26.2 client classes.
+/** MCGUI-owned adapter for the locally installed, named Java 26.2 client classes.
  * Bootstrap creates registries, not a client window. Datagen lookups leave tags
  * unbound, so this adapter binds the JAR's vanilla tags before building tabs.
  * Package-private tag APIs below are deliberately pinned to this game version.
  */
-public class McuiCatalogue {
+public class McguiCatalogue {
   // Geometry is exported from the user's client, never copied into npm packages.
   static JsonObject specialGeometry() {
     var result = new JsonObject();

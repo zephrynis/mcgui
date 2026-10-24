@@ -6,10 +6,10 @@ import { tmpdir } from 'node:os';
 import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
 
-const url = process.env.MCUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
-const executablePath = process.env.MCUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
+const url = process.env.MCGUI_TEST_URL ?? 'http://127.0.0.1:5173/iframe.html?id=examples-inventory-workbench--interactive&viewMode=story';
+const executablePath = process.env.MCGUI_CHROME ?? (() => { try { return execFileSync('which', ['google-chrome'], { encoding: 'utf8' }).trim(); } catch { return undefined; } })();
 const browser = await chromium.launch({ executablePath, headless: true });
-const evidence = path.join(tmpdir(), 'mcui');
+const evidence = path.join(tmpdir(), 'mcgui');
 const errors = [];
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
@@ -30,10 +30,10 @@ try {
   await page.mouse.move(0, 0); await page.keyboard.press('Tab');
   await page.keyboard.press('Shift+Tab');
   assert.equal(await button.evaluate(element => element.matches(':focus-visible')), true);
-  assert.equal(await button.locator('.mcui-button-highlighted').evaluate(element => getComputedStyle(element).visibility), 'visible');
+  assert.equal(await button.locator('.mcgui-button-highlighted').evaluate(element => getComputedStyle(element).visibility), 'visible');
   await page.getByLabel('Disabled state').check();
   assert.equal(await button.isDisabled(), true);
-  assert.equal(await button.locator('.mcui-button-disabled').evaluate(element => getComputedStyle(element).visibility), 'visible');
+  assert.equal(await button.locator('.mcgui-button-disabled').evaluate(element => getComputedStyle(element).visibility), 'visible');
   await page.getByLabel('Disabled state').uncheck();
   for (const scale of [1, 2, 3, 4]) {
     await page.getByLabel('GUI scale').selectOption(String(scale));
@@ -48,18 +48,18 @@ try {
   await page.getByLabel('Logical width').press('End');
   await page.getByLabel('Button label').fill('');
   await page.mouse.move(0, 0);
-  const sprite = page.locator('.button-sample .mcui-button-normal');
+  const sprite = page.locator('.button-sample .mcgui-button-normal');
   // Pixel equality is defined at integer device coordinates, independent of the
   // surrounding page's responsive typography and flex centering.
   await page.locator('.button-sample').evaluate(element => element.style.cssText = 'position:fixed;left:0;top:0;z-index:100');
   // Hide the text only for this texture fidelity assertion, then restore it.
-  await page.locator('.button-sample .mcui-button-label').evaluate(element => element.style.visibility = 'hidden');
+  await page.locator('.button-sample .mcgui-button-label').evaluate(element => element.style.visibility = 'hidden');
   const captured = PNG.sync.read(await sprite.screenshot());
-  const manifest = JSON.parse(await readFile('apps/storybook/public/mcui/manifest.json', 'utf8'));
-  const original = PNG.sync.read(await readFile(path.join('apps/storybook/public/mcui', manifest.sprites['button.normal'].file)));
+  const manifest = JSON.parse(await readFile('apps/storybook/public/mcgui/manifest.json', 'utf8'));
+  const original = PNG.sync.read(await readFile(path.join('apps/storybook/public/mcgui', manifest.sprites['button.normal'].file)));
   assert.equal(captured.width, original.width); assert.equal(captured.height, original.height);
   assert.deepEqual(captured.data, original.data, 'Full-size sprite pixels differ from the extracted source');
-  await page.locator('.button-sample .mcui-button-label').evaluate(element => element.style.visibility = '');
+  await page.locator('.button-sample .mcgui-button-label').evaluate(element => element.style.visibility = '');
   await page.getByLabel('Button label').fill('Back to Game');
   const expected = PNG.sync.read(PNG.sync.write(original));
   const label = 'Back to Game';
@@ -70,7 +70,7 @@ try {
     for (const char of label) {
       const glyph = manifest.font.glyphs[char], image = glyph.image;
       if (image) {
-        if (!fontImages.has(image.file)) fontImages.set(image.file, PNG.sync.read(await readFile(path.join('apps/storybook/public/mcui', image.file))));
+        if (!fontImages.has(image.file)) fontImages.set(image.file, PNG.sync.read(await readFile(path.join('apps/storybook/public/mcgui', image.file))));
         const atlas = fontImages.get(image.file);
         for (let gy = 0; gy < image.height; gy++) for (let gx = 0; gx < image.width; gx++) {
           const src = ((image.y + gy) * atlas.width + image.x + gx) * 4;
@@ -89,14 +89,14 @@ try {
   await page.locator('.button-sample').evaluate(element => element.style.cssText = '');
   for (let i = 0; i < 50; i++) await page.getByLabel('Logical width').press('ArrowLeft');
   await page.getByLabel('GUI scale').selectOption('2');
-  await page.getByLabel('Asset bundle').selectOption('mcui-pack');
+  await page.getByLabel('Asset bundle').selectOption('mcgui-pack');
   await page.getByRole('button', { name: 'Back to Game' }).waitFor();
   await page.getByText('400 × 40 source pixels').first().waitFor();
   assert.equal((await page.getByRole('button', { name: 'Back to Game' }).boundingBox()).width, 300);
   await page.getByRole('button', { name: 'Back to Game' }).click();
   assert.match(await page.locator('.preview-footer output').innerText(), /activated 4 times/);
   await page.screenshot({ path: `${evidence}-pack.png`, fullPage: true });
-  await page.getByLabel('Asset bundle').selectOption('mcui');
+  await page.getByLabel('Asset bundle').selectOption('mcgui');
   await page.getByRole('button', { name: 'Back to Game' }).waitFor();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: `${evidence}-mobile.png`, fullPage: true });

@@ -14,7 +14,7 @@ export function MinecraftProvider({ assets, baseUrl, scale = 2, children }: Omit
 }
 export function useMinecraft(): Theme {
   const context = useContext(MinecraftContext);
-  if (!context) throw new Error('MCUI components must be inside MinecraftProvider.');
+  if (!context) throw new Error('MCGUI components must be inside MinecraftProvider.');
   return context;
 }
 
@@ -22,13 +22,13 @@ export interface SpriteProps { name: SpriteRole; width: number; height: number; 
 export function Sprite({ name, width, height, className = '', style }: SpriteProps) {
   const { assets, baseUrl, scale } = useMinecraft();
   const sprite = assets.sprites[name];
-  if (!sprite) throw new Error(`Missing ${name} assets. Re-run mcui-assets extract with the current CLI.`);
+  if (!sprite) throw new Error(`Missing ${name} assets. Re-run mcgui-assets extract with the current CLI.`);
   const slices = useMemo(() => spriteSlices(sprite, width, height), [sprite, width, height]);
   const drawing = useMemo(() => slices.map((slice, index) => <svg key={index} x={slice.x} y={slice.y} width={slice.width} height={slice.height}
       viewBox={`${slice.sx} ${slice.sy} ${slice.sw} ${slice.sh}`} preserveAspectRatio="none" overflow="hidden">
       <image href={assetUrl(baseUrl, sprite.file)} width={sprite.pixelWidth} height={sprite.pixelHeight} />
     </svg>), [slices, sprite, baseUrl]);
-  return <svg aria-hidden="true" focusable="false" className={`mcui-sprite ${className}`} width={width * scale} height={height * scale}
+  return <svg aria-hidden="true" focusable="false" className={`mcgui-sprite ${className}`} width={width * scale} height={height * scale}
     viewBox={`0 0 ${width} ${height}`} style={style}>
     {drawing}
   </svg>;
@@ -84,8 +84,8 @@ export function MinecraftText({ children, shadow = true, className = '', style }
       {glyphs.map(glyph => <g key={glyph.key} filter={`url(#${id}-${glyph.color}-text)`}>{glyph.image}</g>)}
     </svg>;
   }, [children, font, baseUrl, scale, width, height, id, shadow]);
-  return <span className={`mcui-text ${className}`} style={{ width: (width + (shadow ? 1 : 0)) * scale, height: height * scale, ...style }}>
-    <span className="mcui-sr-only">{text}</span>
+  return <span className={`mcgui-text ${className}`} style={{ width: (width + (shadow ? 1 : 0)) * scale, height: height * scale, ...style }}>
+    <span className="mcgui-sr-only">{text}</span>
     {drawing}
   </span>;
 }
@@ -96,12 +96,12 @@ export interface ButtonProps extends Omit<ComponentPropsWithRef<'button'>, 'chil
 export function Button({ children, width = 200, height = 20, className = '', style, type = 'button', disabled, ...props }: ButtonProps) {
   const { scale, assets } = useMinecraft();
   if (!Number.isInteger(width) || width < 8 || width > 2048 || !Number.isInteger(height) || height < 12 || height > 512) throw new Error('Button dimensions must be integer GUI units (width 8–2048, height 12–512).');
-  return <button {...props} type={type} disabled={disabled} className={`mcui-button ${className}`}
+  return <button {...props} type={type} disabled={disabled} className={`mcgui-button ${className}`}
     style={{ width: width * scale, height: height * scale, ...style }}>
-    <Sprite name="button.normal" width={width} height={height} className="mcui-button-normal" />
-    <Sprite name="button.highlighted" width={width} height={height} className="mcui-button-highlighted" />
-    <Sprite name="button.disabled" width={width} height={height} className="mcui-button-disabled" />
-    <span className="mcui-button-label" style={{ top: Math.floor((height - assets.font.lineHeight) / 2) * scale }}>
+    <Sprite name="button.normal" width={width} height={height} className="mcgui-button-normal" />
+    <Sprite name="button.highlighted" width={width} height={height} className="mcgui-button-highlighted" />
+    <Sprite name="button.disabled" width={width} height={height} className="mcgui-button-disabled" />
+    <span className="mcgui-button-label" style={{ top: Math.floor((height - assets.font.lineHeight) / 2) * scale }}>
       <MinecraftText style={{ transform: `translateX(${Math.floor((width - measureText(assets.font, children)) / 2) * scale}px)` }}>{children}</MinecraftText>
     </span>
   </button>;

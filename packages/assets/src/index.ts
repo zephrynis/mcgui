@@ -105,23 +105,23 @@ async function writeBundle(out: string, manifest: AssetManifest, images: ImageSt
     if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error('Output must be a directory, not a file or symlink.');
     const names = await readdir(target);
     if (names.length) {
-      const marker = await readFile(path.join(target, '.mcui-generated'), 'utf8').catch(() => '');
-      if (marker !== 'mcui-assets-v1\n') throw new Error('Output directory contains unmanaged files; choose an empty directory.');
-      if (names.some(name => !['.mcui-generated', 'manifest.json', 'diagnostics.json', 'files'].includes(name))) throw new Error('Output contains unmanaged files; refusing to replace it.');
+      const marker = await readFile(path.join(target, '.mcgui-generated'), 'utf8').catch(() => '');
+      if (marker !== 'mcgui-assets-v1\n') throw new Error('Output directory contains unmanaged files; choose an empty directory.');
+      if (names.some(name => !['.mcgui-generated', 'manifest.json', 'diagnostics.json', 'files'].includes(name))) throw new Error('Output contains unmanaged files; refusing to replace it.');
       for (const name of names) if ((await lstat(path.join(target, name))).isSymbolicLink()) throw new Error('Output contains a symbolic link.');
       for (const entry of await readdir(path.join(target, 'files'), { withFileTypes: true })) {
         if (!entry.isFile() || !/^[a-f0-9]{64}\.png$/.test(entry.name)) throw new Error('Output contains unmanaged asset files.');
       }
     }
   } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
-  const temporary = await mkdtemp(path.join(parent, '.mcui-build-'));
+  const temporary = await mkdtemp(path.join(parent, '.mcgui-build-'));
   let backup: string | undefined;
   try {
     await mkdir(path.join(temporary, 'files'));
     for (const [file, data] of images.files) await writeFile(path.join(temporary, file), data);
     await writeFile(path.join(temporary, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     await writeFile(path.join(temporary, 'diagnostics.json'), JSON.stringify({ warnings: manifest.warnings, sources: manifest.sources, items: manifest.catalogue?.items.filter(item=>item.iconWarning).map(item=>({stackKey:item.stackKey,reason:item.iconWarning})), previews:manifest.catalogue?.items.filter(item=>item.icon?.notes?.length).map(item=>({stackKey:item.stackKey,notes:item.icon!.notes})) }, null, 2) + '\n');
-    await writeFile(path.join(temporary, '.mcui-generated'), 'mcui-assets-v1\n');
+    await writeFile(path.join(temporary, '.mcgui-generated'), 'mcgui-assets-v1\n');
     if (exists) { backup = `${temporary}-previous`; await rename(target, backup); }
     try { await rename(temporary, target); }
     catch (error) { if (backup) { await rename(backup, target); backup = undefined; } throw error; }

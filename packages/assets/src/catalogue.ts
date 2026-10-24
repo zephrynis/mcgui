@@ -51,10 +51,10 @@ export async function exportCatalogue(clientJar: string, options: CatalogueOptio
     safePath(relative); const file = path.resolve(libraries,relative);
     if ((await stat(file).catch(()=>undefined))?.isFile()) classpath.push(file);
   }
-  const temporary = await mkdtemp(path.join(tmpdir(),'mcui-catalogue-'));
+  const temporary = await mkdtemp(path.join(tmpdir(),'mcgui-catalogue-'));
   try {
     const output = path.join(temporary,'catalogue.json');
-    await promisify(execFile)(options.java ?? 'java',['--class-path',classpath.join(path.delimiter),fileURLToPath(new URL('./java/McuiCatalogue.java',import.meta.url)),output,jar],{cwd:temporary,timeout:120000,maxBuffer:4*1024*1024});
+    await promisify(execFile)(options.java ?? 'java',['--class-path',classpath.join(path.delimiter),fileURLToPath(new URL('./java/McguiCatalogue.java',import.meta.url)),output,jar],{cwd:temporary,timeout:120000,maxBuffer:4*1024*1024});
     return await readFile(output);
   } catch (error) {
     const failure = error as Error & { stdout?: string; stderr?: string };
