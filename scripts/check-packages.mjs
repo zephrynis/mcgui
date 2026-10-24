@@ -10,7 +10,7 @@ for (const name of ['core', 'assets', 'react']) {
   assert.equal(metadata.name, `@mcgui/${name}`);
   assert.equal(metadata.publishConfig?.access, 'public');
   if (name === 'assets') {
-    assert.deepEqual(metadata.bin, { 'mcgui-assets': './dist/cli.js' });
+    assert.deepEqual(metadata.bin, { 'mcgui-assets': 'dist/cli.js' });
     assert.ok(result[0].files.some(file => file.path === 'dist/java/McguiCatalogue.java'), 'Missing Java catalogue helper');
   }
   assert.ok(result[0].files.some(file => file.path === 'LICENSE'), `Missing license: @mcgui/${name}`);

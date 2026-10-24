@@ -9,7 +9,7 @@
     "dist"
   ],
   "bin": {
-    "mcgui-assets": "./dist/cli.js"
+    "mcgui-assets": "dist/cli.js"
   },
   "exports": {
     ".": {
