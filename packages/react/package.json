@@ -2,6 +2,13 @@
   "name": "@mcgui/react",
   "version": "0.1.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zephrynis/mcgui.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/zephrynis/mcgui#readme",
+  "bugs": { "url": "https://github.com/zephrynis/mcgui/issues" },
   "publishConfig": { "access": "public" },
   "type": "module",
   "files": [

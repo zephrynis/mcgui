@@ -9,6 +9,10 @@ for (const name of ['core', 'assets', 'react']) {
   assert.equal(metadata.license, 'MIT');
   assert.equal(metadata.name, `@mcgui/${name}`);
   assert.equal(metadata.publishConfig?.access, 'public');
+  assert.equal(metadata.repository?.url, 'git+https://github.com/zephrynis/mcgui.git');
+  assert.equal(metadata.repository?.directory, `packages/${name}`);
+  assert.equal(metadata.homepage, 'https://github.com/zephrynis/mcgui#readme');
+  assert.equal(metadata.bugs?.url, 'https://github.com/zephrynis/mcgui/issues');
   if (name === 'assets') {
     assert.deepEqual(metadata.bin, { 'mcgui-assets': 'dist/cli.js' });
     assert.ok(result[0].files.some(file => file.path === 'dist/java/McguiCatalogue.java'), 'Missing Java catalogue helper');

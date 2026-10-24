@@ -184,17 +184,29 @@ npm run test:storybook-browser
 
 ### Publishing
 
-The three library packages configure public npm access. The workspace root and Storybook are private. After running the checks above, inspect package contents with `npm pack --dry-run --workspace <package>`.
+CI runs on pushes to `main` and pull requests: TypeScript, tests, builds, package-content inspection, and Vite/Next.js production consumers using original synthetic assets. Local Minecraft bundles and the asset-dependent Storybook browser suites are not uploaded or run in CI.
 
-Authorized maintainers can publish in dependency order:
+The [publish workflow](.github/workflows/publish.yml) runs those same checks before publishing stable release tags such as `v0.1.1`. It uses npm trusted publishing with provenance, not a stored npm token. All three package versions and the internal core dependencies must match the tag. Already published versions are skipped when rerunning a partially completed release.
+
+**One-time npm setup:** for each of [`@mcgui/core`](https://www.npmjs.com/package/@mcgui/core), [`@mcgui/assets`](https://www.npmjs.com/package/@mcgui/assets), and [`@mcgui/react`](https://www.npmjs.com/package/@mcgui/react), open **Settings → Trusted publishing**, choose **GitHub Actions**, and enter:
+
+- Organization or user: `zephrynis`
+- Repository: `mcgui`
+- Workflow filename: `publish.yml` (filename only)
+- Environment: leave blank
+- Allowed actions: enable direct **`npm publish`**, not only staged publishing
+
+npm currently requires the first successful trusted publish within two days of configuring it; if the configuration expires, recreate it before releasing. See [npm's trusted publishing guide](https://docs.npmjs.com/trusted-publishers).
+
+**For a new release:** update the version in all three `packages/*/package.json` files, update the `@mcgui/core` dependencies in assets, React, and Storybook to that same version, and refresh `package-lock.json` with `npm install --package-lock-only --ignore-scripts`. Run the checks, commit and push the changes to `main`, then push a matching tag:
 
 ```sh
-npm publish --workspace @mcgui/core
-npm publish --workspace @mcgui/assets
-npm publish --workspace @mcgui/react
+# Example for a future 0.1.1 release, after updating and committing versions:
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
-These commands upload packages to npm. Do not include local extracted bundles or the Storybook build in a release.
+Pushing the tag starts a live npm release. Do not reuse `v0.1.0`: that npm version already exists. Repository, homepage, and issue links added after `0.1.0` appear on npm with the next published versions; published metadata cannot be replaced in place. The workspace root and Storybook remain private. Do not include local extracted bundles or the Storybook build in a release.
 
 ## License and assets
 
