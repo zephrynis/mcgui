@@ -6,7 +6,25 @@ MCGUI combines native web controls with Minecraft textures, bitmap text, item ic
 
 **Experimental · React 19 · Minecraft Java 26.2 · MIT-licensed code**
 
-The packages are not published to npm yet. You can build and explore them from this repository today.
+Version **0.1.0** is published on npm. You can also build and explore the components locally through Storybook.
+
+## Install
+
+In a React 19 application:
+
+```sh
+npm install @mcgui/react
+npm install --save-dev @mcgui/assets
+```
+
+Extract assets from your local Minecraft Java 26.2 installation into your application's public directory:
+
+```sh
+npx mcgui-assets extract --version 26.2 --items --out ./public/mcgui
+npx mcgui-assets validate ./public/mcgui
+```
+
+Item extraction requires Java 25+; omit `--items` for GUI-only extraction. Import `@mcgui/react/styles.css` once and provide the generated manifest to `MinecraftProvider`, as shown below. If your application imports manifest validation or inventory helpers directly from `@mcgui/core`, add it as a direct dependency with `npm install @mcgui/core`.
 
 ## Features
 
@@ -70,7 +88,7 @@ Custom launcher setups can use `--minecraft-dir`, `--version-metadata`, and `--l
 
 ## Use in an application
 
-Until npm publication, build the workspace and use local package tarballs. The [Vite and Next.js examples](examples/README.md) show complete consumers and include a script that installs and tests the built packages.
+Install the packages from npm using the commands above. The [Vite and Next.js examples](examples/README.md) show complete consumers and include a development script that installs and tests local package tarballs.
 
 Extract an asset bundle into your application's public directory. Load its `manifest.json`, validate it with `parseManifest` from `@mcgui/core`, and pass it to the provider. `baseUrl` points to the directory containing the manifest and its `files/` directory.
 
